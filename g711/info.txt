@@ -1,0 +1,3 @@
+source:
+	http://www.speech.kth.se/cost250/refsys/v1.0/src/g711.c
+	https://github.com/escrichov/G711/blob/master/example.c

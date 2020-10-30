@@ -1,0 +1,9 @@
+$ ./snowflake
+
+$ ./snowflake -factor_x 0.7 -factor_y -0.7 -factor_w 2
+$ ./snowflake -factor_x 0.56 -factor_y -0.56 -factor_w 3
+$ ./snowflake -factor_x 0.5 -factor_y -0.5 -factor_w 4
+$ ./snowflake -factor_x 0.5 -factor_y 0.5 -factor_w 4
+$ ./snowflake -factor_x 0.42 -factor_y 0.42 -factor_w 5
+$ ./snowflake -factor_x 0.42 -factor_y -0.42 -factor_w 5
+$ ./snowflake -factor_x 0.37 -factor_y -0.37 -factor_w 6

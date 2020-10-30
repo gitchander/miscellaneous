@@ -1,0 +1,10 @@
+[Ping]
+  From = "127.0.0.1"
+  Target = "192.168.0.1"
+  Timeout = 3
+
+[Snmp]
+  Target = "192.168.1.10"
+  Port = 161
+  OID = ".1.3.6.1.4.9.27"
+  Timeout = 2
