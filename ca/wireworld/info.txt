@@ -1,0 +1,7 @@
+https://ru.wikipedia.org/wiki/Wireworld
+http://rosettacode.org/wiki/Wireworld
+https://www.quinapalus.com/wi-index.html
+
+run:
+$ ./wireworld -sample samples/sample1
+$ ./wireworld -sample samples/the_or_gate

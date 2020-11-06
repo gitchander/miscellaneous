@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"image"
 	"log"
 	"time"
 
@@ -45,40 +46,68 @@ func Main() {
 
 	flag.Parse()
 
+	c := Config{
+		Size: image.Point{X: width, Y: height},
+		DP: DoublePendulum{
+			Pendulum{
+				Mass:   m1,
+				Length: r1,
+				Theta:  DegToRad(a1),
+			},
+			Pendulum{
+				Mass:   m2,
+				Length: r2,
+				Theta:  DegToRad(a2),
+			},
+		},
+	}
+
+	err := Run(c)
+	checkError_(err)
+}
+
+func checkError_(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+type Config struct {
+	Size image.Point
+	DP   DoublePendulum
+}
+
+func Run(c Config) error {
+
 	gtk.Init(nil)
 
 	w, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
-	checkError(err)
+	if err != nil {
+		return err
+	}
 
 	w.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
 	w.SetTitle("Double Pendulum")
-	w.SetSizeRequest(width, height)
+	w.SetSizeRequest(c.Size.X, c.Size.Y)
 	w.SetPosition(gtk.WIN_POS_CENTER)
 
-	dp := DoublePendulum{
-		Pendulum{
-			Mass:   m1,
-			Length: r1,
-			Theta:  DegToRad(a1),
-		},
-		Pendulum{
-			Mass:   m2,
-			Length: r2,
-			Theta:  DegToRad(a2),
-		},
+	pal := makePalette1()
+
+	var (
+		//drawer = dummyDrawer{}
+		drawer = NewDPDrawer(&(c.DP), pal)
+	)
+
+	da, err := makeDrawingArea(drawer)
+	if err != nil {
+		return err
 	}
 
-	//x := dummyDrawer{}
-	x := makeDP(dp)
-
-	da, err := makeDrawingArea(x)
-	checkError(err)
-
 	process := func(d time.Duration) {
-		x.Render(d)
+		drawer.Render(d)
 		glib.IdleAdd(da.QueueDraw)
 	}
 
@@ -89,12 +118,8 @@ func Main() {
 	w.ShowAll()
 
 	gtk.Main()
-}
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
 
 type Drawer interface {
