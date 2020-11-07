@@ -1,7 +1,8 @@
 package main
 
+// Background ColorRGBf
+
 type Palette struct {
-	Background ColorRGBf
 	Foreground ColorRGBf
 	Path       ColorRGBf // Trajectory
 
@@ -11,19 +12,35 @@ type Palette struct {
 
 var palettes = []Palette{
 	{
-		Background: RGBf(1, 1, 1),
-		Foreground: RGBf(0, 0, 0),
+		Foreground: Black,
 		Path:       RGBf(0.3, 0.3, 1),
 
-		MassFill:   RGBf(0.8, 0.8, 0),
-		MassStroke: RGBf(0.2, 0.2, 0),
+		MassFill:   Blue,
+		MassStroke: Black,
 	},
 	{
-		Background: RGBf(1, 1, 1),
-		Foreground: RGBf(0, 0, 0),
+		Foreground: Black,
 		Path:       RGBf(0.3, 0.3, 1),
 
-		MassFill:   RGBf(0, 0.5, 0),
-		MassStroke: RGBf(0, 0.2, 0),
+		MassFill:   Red,
+		MassStroke: Black,
 	},
+	{
+		Foreground: Black,
+		Path:       RGBf(0.3, 0.3, 1),
+
+		MassFill:   Yellow,
+		MassStroke: Black,
+	},
+	{
+		Foreground: Black,
+		Path:       RGBf(0.3, 0.3, 1),
+
+		MassFill:   Green,
+		MassStroke: Black,
+	},
+}
+
+func GetPalette(i int) Palette {
+	return palettes[mod(i, len(palettes))]
 }

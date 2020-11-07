@@ -5,3 +5,4 @@ https://www.quinapalus.com/wi-index.html
 run:
 $ ./wireworld -sample samples/sample1
 $ ./wireworld -sample samples/the_or_gate
+$ ./wireworld -sample samples/the_and_gate

@@ -60,7 +60,7 @@ func makeImages() error {
 		prev := Point2f{X: x2, Y: y2}
 
 		t := float64(i) / float64(len(dts)-1)
-		cl := clerp(RGBf(1, 0, 0), RGBf(0, 0, 0), t)
+		cl := ColorLerp(RGBf(1, 0, 0), RGBf(0, 0, 0), t)
 
 		//fmt.Println(t, cl)
 

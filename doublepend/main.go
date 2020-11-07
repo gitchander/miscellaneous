@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"image"
 	"log"
 	"time"
@@ -58,20 +59,51 @@ func Main() {
 		},
 	}
 
-	err := Run(c)
+	samples := []*Sample{
+		{
+			dp:      &(c.DP),
+			palette: GetPalette(0),
+		},
+	}
+
+	err := Run(c.Size, samples)
 	checkError(err)
+}
+
+type Config struct {
+	Size image.Point
+	DP   DoublePendulum
 }
 
 func runRandom() {
 
 	r := newRandNow()
 
-	c := Config{
-		Size: image.Point{X: 800, Y: 800},
-		DP:   *randDoublePendulum(r),
+	n := 4
+
+	dps := make([]*DoublePendulum, n)
+	dp0 := randDoublePendulum(r)
+	for i := 0; i < n; i++ {
+		if i == 0 {
+			dps[i] = dp0
+		} else {
+			clone := dp0.Clone()
+			randChangeDoublePendulum(r, clone)
+			dps[i] = clone
+		}
 	}
 
-	err := Run(c)
+	samples := make([]*Sample, n)
+	for i, dp := range dps {
+		samples[i] = &Sample{
+			dp:      dp,
+			palette: GetPalette(i),
+		}
+	}
+
+	size := image.Point{X: 800, Y: 800}
+
+	err := Run(size, samples)
 	checkError(err)
 }
 
@@ -81,12 +113,7 @@ func checkError(err error) {
 	}
 }
 
-type Config struct {
-	Size image.Point
-	DP   DoublePendulum
-}
-
-func Run(c Config) error {
+func Run(size image.Point, samples []*Sample) error {
 
 	gtk.Init(nil)
 
@@ -100,32 +127,13 @@ func Run(c Config) error {
 	})
 
 	w.SetTitle("Double Pendulum")
-	w.SetSizeRequest(c.Size.X, c.Size.Y)
+	w.SetSizeRequest(size.X, size.Y)
 	w.SetPosition(gtk.WIN_POS_CENTER)
 
 	const timesPerSecond = 30
-	drawDeltaTime := time.Second / time.Duration(timesPerSecond)
-	//stepDeltaTime := 100 * time.Millisecond
-	deltaTime := 0.25
+	deltaTime := time.Second / time.Duration(timesPerSecond)
 
-	// fmt.Println("drawDeltaTime:", drawDeltaTime)
-	// fmt.Println("stepDeltaTime:", stepDeltaTime)
-
-	r := newRandNow()
-
-	otherDP := c.DP
-	randChangeDoublePendulum(r, &otherDP)
-
-	samples := []*Sample{
-		{
-			dp:      &(c.DP),
-			palette: palettes[0],
-		},
-		{
-			dp:      &otherDP,
-			palette: palettes[1],
-		},
-	}
+	fmt.Println("deltaTime:", deltaTime)
 
 	background := RGBf(1, 1, 1)
 	engine := NewEngine(samples, deltaTime, background)
@@ -140,7 +148,7 @@ func Run(c Config) error {
 		glib.IdleAdd(da.QueueDraw)
 		return true
 	}
-	go runPeriodic(drawDeltaTime, process)
+	go runPeriodic(deltaTime, process)
 
 	w.Add(da)
 

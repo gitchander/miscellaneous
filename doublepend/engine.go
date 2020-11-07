@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"sync"
+	"time"
 
 	"github.com/gotk3/gotk3/cairo"
 )
@@ -15,9 +16,9 @@ type Sample struct {
 type Engine struct {
 	guard sync.Mutex
 
-	samples    []*Sample
-	deltaTime  float64
-	background ColorRGBf
+	samples      []*Sample
+	deltaTimeSec float64
+	background   ColorRGBf
 
 	allocSize image.Point
 	size      image.Point
@@ -33,11 +34,11 @@ type Engine struct {
 
 var _ Drawer = &Engine{}
 
-func NewEngine(samples []*Sample, deltaTime float64, background ColorRGBf) *Engine {
+func NewEngine(samples []*Sample, deltaTime time.Duration, background ColorRGBf) *Engine {
 	return &Engine{
-		samples:    samples,
-		deltaTime:  deltaTime,
-		background: background,
+		samples:      samples,
+		deltaTimeSec: deltaTime.Seconds(),
+		background:   background,
 	}
 }
 
@@ -91,28 +92,42 @@ func (p *Engine) Draw(context *cairo.Context) {
 func (p *Engine) CalcNextStep() {
 	p.guard.Lock()
 	{
-		if p.surfacePendulums != nil {
-			c := p.contextPendulums
-			c.SetSourceSurface(p.surfaceTrace, 0, 0)
-			c.Paint()
-
-			for _, sample := range p.samples {
-				nextStep(sample.dp, p.deltaTime)
-				p.renderNext(sample)
-			}
-		}
+		p.renderNext()
 	}
 	p.guard.Unlock()
 }
 
-func (p *Engine) renderNext(sample *Sample) {
+func (p *Engine) renderNext() {
 
 	if p.surfacePendulums == nil {
 		return
 	}
 
-	x0 := float64(p.size.X) / 2
-	y0 := float64(p.size.Y) / 2
+	c := p.contextPendulums
+	c.SetSourceSurface(p.surfaceTrace, 0, 0)
+	c.Paint()
+
+	var (
+		x0 = float64(p.size.X) / 2
+		y0 = float64(p.size.Y) / 2
+	)
+
+	for _, sample := range p.samples {
+		nextStep(sample.dp, p.deltaTimeSec)
+		p.renderSample(x0, y0, sample)
+	}
+
+	// draw anchor circle
+	{
+		c.Arc(x0, y0, 3, 0, Tau)
+		setColor(c, Gray50)
+		c.FillPreserve()
+		setColor(c, Black)
+		c.Stroke()
+	}
+}
+
+func (p *Engine) renderSample(x0, y0 float64, sample *Sample) {
 
 	x1, y1, x2, y2 := getDPCoords(sample.dp)
 
@@ -142,10 +157,11 @@ func (p *Engine) renderNext(sample *Sample) {
 
 	c.Save()
 
-	c.SetSourceSurface(p.surfaceTrace, 0, 0)
-	//c.Paint()
+	//c.SetSourceSurface(p.surfaceTrace, 0, 0)
 
 	c.Translate(x0, y0)
+
+	radius := 7.0
 
 	c.MoveTo(0, 0)
 	c.LineTo(x1, y1)
@@ -153,13 +169,13 @@ func (p *Engine) renderNext(sample *Sample) {
 	setColor(c, sample.palette.Foreground)
 	c.Stroke()
 
-	c.Arc(x1, y1, 10, 0, Tau)
+	c.Arc(x1, y1, radius, 0, Tau)
 	setColor(c, sample.palette.MassFill)
 	c.FillPreserve()
 	setColor(c, sample.palette.MassStroke)
 	c.Stroke()
 
-	c.Arc(x2, y2, 10, 0, Tau)
+	c.Arc(x2, y2, radius, 0, Tau)
 	setColor(c, sample.palette.MassFill)
 	c.FillPreserve()
 	setColor(c, sample.palette.MassStroke)
