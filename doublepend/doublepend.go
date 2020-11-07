@@ -67,9 +67,9 @@ func nextStep(dp *DoublePendulum, deltaTime float64) {
 	a1 += a1_v * dt
 	a2 += a2_v * dt
 
-	if false {
-		a1_v *= 0.99
-		a2_v *= 0.99
+	if true {
+		a1_v *= 0.99999
+		a2_v *= 0.99999
 	}
 
 	//---------------------------------------------------

@@ -96,7 +96,7 @@ func (a Rational) normal() Rational {
 		p = -p
 	}
 
-	d := gcd_Euclidean(p, q)
+	d := gcd(p, q)
 	if d > 1 {
 		p /= d
 		q /= d
@@ -119,8 +119,16 @@ func (a Rational) String() string {
 	return fmt.Sprintf("%d/%d", a.p, a.q)
 }
 
-// gcd - Greatest common divisor
+// GCD - Greatest Common Denominator: largest number that can devide two numbers.
+// GCD - Greatest Common Divisor
 // https://en.wikipedia.org/wiki/Greatest_common_divisor
+
+func gcd(a, b int) int {
+	if b == 0 {
+		return a
+	}
+	return gcd(b, a%b)
+}
 
 func gcd_Euclidean(a, b int) int {
 	for a != b {
@@ -130,7 +138,6 @@ func gcd_Euclidean(a, b int) int {
 			b -= a
 		}
 	}
-
 	return a
 }
 

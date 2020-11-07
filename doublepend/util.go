@@ -4,8 +4,14 @@ import (
 	"math"
 )
 
+const Tau = 2 * math.Pi
+
 func DegToRad(deg float64) float64 {
 	return deg * math.Pi / 180
+}
+
+func RadToDeg(rad float64) float64 {
+	return rad * 180 / math.Pi
 }
 
 func clampFloat64(a float64, min, max float64) float64 {
@@ -29,14 +35,12 @@ func ceilPowerOfTwo(x int) int {
 	return d
 }
 
-const twoPi = 2 * math.Pi
-
 func angleNorm(angle float64) float64 {
 	for angle < -math.Pi {
-		angle += twoPi
+		angle += Tau
 	}
 	for angle > math.Pi {
-		angle -= twoPi
+		angle -= Tau
 	}
 	return angle
 }

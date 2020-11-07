@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"image"
 	"math"
+	"time"
 
 	"github.com/gotk3/gotk3/cairo"
 )
 
 func makeImages() error {
+
+	const timesPerSecond = 30
+	dur := time.Second / time.Duration(timesPerSecond)
+	deltaTime := dur.Seconds()
 
 	// ps := [2]Pendulum{
 	// 	0: Pendulum{
@@ -102,7 +107,7 @@ func makeImages() error {
 			t := 0.0
 			for t < t_max {
 
-				nextStep(n.dp, dpDeltaTime)
+				nextStep(n.dp, deltaTime)
 
 				_, _, x2, y2 := getDPCoords(n.dp)
 				n.prev = Point2f{X: x2, Y: y2}

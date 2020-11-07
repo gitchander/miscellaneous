@@ -1,21 +1,29 @@
 package main
 
 type Palette struct {
-	clBackground ColorRGBf
-	clForeground ColorRGBf
-	clPath       ColorRGBf // Trajectory
+	Background ColorRGBf
+	Foreground ColorRGBf
+	Path       ColorRGBf // Trajectory
 
-	clMassFill   ColorRGBf
-	clMassStroke ColorRGBf
+	MassFill   ColorRGBf
+	MassStroke ColorRGBf
 }
 
-func makePalette1() Palette {
-	return Palette{
-		clBackground: RGBf(1, 1, 1),
-		clForeground: RGBf(0, 0, 0),
-		clPath:       RGBf(0.3, 0.3, 1),
+var palettes = []Palette{
+	{
+		Background: RGBf(1, 1, 1),
+		Foreground: RGBf(0, 0, 0),
+		Path:       RGBf(0.3, 0.3, 1),
 
-		clMassFill:   RGBf(0, 0.5, 0),
-		clMassStroke: RGBf(0, 0.2, 0),
-	}
+		MassFill:   RGBf(0.8, 0.8, 0),
+		MassStroke: RGBf(0.2, 0.2, 0),
+	},
+	{
+		Background: RGBf(1, 1, 1),
+		Foreground: RGBf(0, 0, 0),
+		Path:       RGBf(0.3, 0.3, 1),
+
+		MassFill:   RGBf(0, 0.5, 0),
+		MassStroke: RGBf(0, 0.2, 0),
+	},
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"image"
 	"log"
 	"time"
@@ -13,13 +12,10 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-// https://www.youtube.com/watch?v=uWzPe_S-RVE
-// https://www.myphysicslab.com/pendulum/double-pendulum-en.html
-// http://bestofallpossibleurls.com/double-pendulum.html
-
 func main() {
 	//makeImages()
-	Main()
+	//Main()
+	runRandom()
 }
 
 func Main() {
@@ -63,10 +59,23 @@ func Main() {
 	}
 
 	err := Run(c)
-	checkError_(err)
+	checkError(err)
 }
 
-func checkError_(err error) {
+func runRandom() {
+
+	r := newRandNow()
+
+	c := Config{
+		Size: image.Point{X: 800, Y: 800},
+		DP:   *randDoublePendulum(r),
+	}
+
+	err := Run(c)
+	checkError(err)
+}
+
+func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,24 +103,44 @@ func Run(c Config) error {
 	w.SetSizeRequest(c.Size.X, c.Size.Y)
 	w.SetPosition(gtk.WIN_POS_CENTER)
 
-	pal := makePalette1()
+	const timesPerSecond = 30
+	drawDeltaTime := time.Second / time.Duration(timesPerSecond)
+	//stepDeltaTime := 100 * time.Millisecond
+	deltaTime := 0.25
 
-	var (
-		//drawer = dummyDrawer{}
-		drawer = NewDPDrawer(&(c.DP), pal)
-	)
+	// fmt.Println("drawDeltaTime:", drawDeltaTime)
+	// fmt.Println("stepDeltaTime:", stepDeltaTime)
 
-	da, err := makeDrawingArea(drawer)
+	r := newRandNow()
+
+	otherDP := c.DP
+	randChangeDoublePendulum(r, &otherDP)
+
+	samples := []*Sample{
+		{
+			dp:      &(c.DP),
+			palette: palettes[0],
+		},
+		{
+			dp:      &otherDP,
+			palette: palettes[1],
+		},
+	}
+
+	background := RGBf(1, 1, 1)
+	engine := NewEngine(samples, deltaTime, background)
+
+	da, err := makeDrawingArea(engine)
 	if err != nil {
 		return err
 	}
 
-	process := func(d time.Duration) {
-		drawer.Render(d)
+	process := func() bool {
+		engine.CalcNextStep()
 		glib.IdleAdd(da.QueueDraw)
+		return true
 	}
-
-	go playCore(process)
+	go runPeriodic(drawDeltaTime, process)
 
 	w.Add(da)
 
@@ -122,28 +151,6 @@ func Run(c Config) error {
 	return nil
 }
 
-type Drawer interface {
-	Resize(width, height int)
-	Draw(c *cairo.Context)
-	Render(time.Duration)
-}
-
-type dummyDrawer struct{}
-
-var _ Drawer = dummyDrawer{}
-
-func (dummyDrawer) Resize(width, height int) {
-	fmt.Printf("size: (%d,%d)\n", width, height)
-}
-
-func (dummyDrawer) Draw(*cairo.Context) {
-
-}
-
-func (dummyDrawer) Render(time.Duration) {
-
-}
-
 func makeDrawingArea(d Drawer) (*gtk.DrawingArea, error) {
 
 	da, err := gtk.DrawingAreaNew()
@@ -151,53 +158,34 @@ func makeDrawingArea(d Drawer) (*gtk.DrawingArea, error) {
 		return nil, err
 	}
 
-	da.Connect("configure-event", func(da *gtk.DrawingArea, event *gdk.Event) {
-		var (
-			w = da.GetAllocatedWidth()
-			h = da.GetAllocatedHeight()
-		)
-		d.Resize(w, h)
-	})
+	da.Connect("configure-event",
+		func(da *gtk.DrawingArea, event *gdk.Event) {
+			var (
+				w = da.GetAllocatedWidth()
+				h = da.GetAllocatedHeight()
+			)
+			d.Resize(w, h)
+		})
 
-	da.Connect("draw", func(da *gtk.DrawingArea, c *cairo.Context) {
-		d.Draw(c)
-	})
+	da.Connect("draw",
+		func(da *gtk.DrawingArea, c *cairo.Context) {
+			d.Draw(c)
+		})
 
 	return da, nil
 }
 
-func start(quit <-chan struct{}, ticks chan<- time.Duration, timesPerSecond int) {
-
-	t0 := time.Now()
-	dt := time.Second / time.Duration(timesPerSecond)
-	t := t0
-
-	var d time.Duration
-
+func runPeriodic(period time.Duration, f func() bool) {
+	t := time.Now()
 	for {
-		select {
-		case <-quit:
+		if !f() {
 			return
-		case ticks <- d:
 		}
-		now := time.Now()
-		d = now.Sub(t0)
-		t = t.Add(dt)
-		dSleep := t.Sub(now)
-		if dSleep > 0 {
-			time.Sleep(dSleep)
+		// calc sleep
+		t = t.Add(period)
+		d := t.Sub(time.Now())
+		if d > 0 {
+			time.Sleep(d)
 		}
-	}
-}
-
-func playCore(process func(time.Duration)) {
-
-	quit := make(chan struct{})
-	ticks := make(chan time.Duration)
-
-	go start(quit, ticks, 30)
-
-	for d := range ticks {
-		process(d)
 	}
 }
