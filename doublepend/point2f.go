@@ -4,7 +4,9 @@ type Point2f struct {
 	X, Y float64
 }
 
-type OptPoint2f struct {
-	Present bool
-	Value   Point2f
+func Pt2f(x, y float64) Point2f {
+	return Point2f{
+		X: x,
+		Y: y,
+	}
 }

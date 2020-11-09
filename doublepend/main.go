@@ -60,13 +60,10 @@ func Main() {
 	}
 
 	samples := []*Sample{
-		{
-			dp:      &(c.DP),
-			palette: GetPalette(0),
-		},
+		newSample(&(c.DP), GetPalette(0)),
 	}
 
-	err := Run(c.Size, samples)
+	err := Run(c.Size, samples, 1)
 	checkError(err)
 }
 
@@ -77,33 +74,19 @@ type Config struct {
 
 func runRandom() {
 
+	var number int
+
+	flag.IntVar(&number, "number", 1, "number of double pendulums")
+
+	flag.Parse()
+
 	r := newRandNow()
 
-	n := 4
-
-	dps := make([]*DoublePendulum, n)
-	dp0 := randDoublePendulum(r)
-	for i := 0; i < n; i++ {
-		if i == 0 {
-			dps[i] = dp0
-		} else {
-			clone := dp0.Clone()
-			randChangeDoublePendulum(r, clone)
-			dps[i] = clone
-		}
-	}
-
-	samples := make([]*Sample, n)
-	for i, dp := range dps {
-		samples[i] = &Sample{
-			dp:      dp,
-			palette: GetPalette(i),
-		}
-	}
+	samples := randSamples(r, number)
 
 	size := image.Point{X: 800, Y: 800}
 
-	err := Run(size, samples)
+	err := Run(size, samples, number)
 	checkError(err)
 }
 
@@ -113,7 +96,7 @@ func checkError(err error) {
 	}
 }
 
-func Run(size image.Point, samples []*Sample) error {
+func Run(size image.Point, samples []*Sample, number int) error {
 
 	gtk.Init(nil)
 
@@ -131,26 +114,36 @@ func Run(size image.Point, samples []*Sample) error {
 	w.SetPosition(gtk.WIN_POS_CENTER)
 
 	const timesPerSecond = 30
-	deltaTime := time.Second / time.Duration(timesPerSecond)
+	var (
+		deltaTime    = time.Second / time.Duration(timesPerSecond)
+		deltaTimeSec = deltaTime.Seconds()
+	)
 
 	fmt.Println("deltaTime:", deltaTime)
 
 	background := RGBf(1, 1, 1)
-	engine := NewEngine(samples, deltaTime, background)
+	engine := NewEngine(samples, background)
 
-	da, err := makeDrawingArea(engine)
+	eh := &engineEventHandler{
+		number: number,
+		engine: engine,
+	}
+
+	da, err := makeDrawingArea(eh)
 	if err != nil {
 		return err
 	}
 
 	process := func() bool {
-		engine.CalcNextStep()
+		engine.CalcNextStep(deltaTimeSec)
 		glib.IdleAdd(da.QueueDraw)
 		return true
 	}
 	go runPeriodic(deltaTime, process)
 
 	w.Add(da)
+
+	da.SetCanFocus(true)
 
 	w.ShowAll()
 
@@ -159,7 +152,7 @@ func Run(size image.Point, samples []*Sample) error {
 	return nil
 }
 
-func makeDrawingArea(d Drawer) (*gtk.DrawingArea, error) {
+func makeDrawingArea(eh EventHandler) (*gtk.DrawingArea, error) {
 
 	da, err := gtk.DrawingAreaNew()
 	if err != nil {
@@ -169,31 +162,34 @@ func makeDrawingArea(d Drawer) (*gtk.DrawingArea, error) {
 	da.Connect("configure-event",
 		func(da *gtk.DrawingArea, event *gdk.Event) {
 			var (
-				w = da.GetAllocatedWidth()
-				h = da.GetAllocatedHeight()
+				width  = da.GetAllocatedWidth()
+				height = da.GetAllocatedHeight()
 			)
-			d.Resize(w, h)
+			eh.Resize(width, height)
 		})
 
 	da.Connect("draw",
 		func(da *gtk.DrawingArea, c *cairo.Context) {
-			d.Draw(c)
+			eh.Draw(c)
+		})
+
+	da.Connect("key-press-event",
+		func(da *gtk.DrawingArea, event *gdk.Event) {
+
+			eventKey := &gdk.EventKey{event}
+			keyCode := eventKey.HardwareKeyCode()
+
+			eh.EventKey(keyCode)
+			//fmt.Println("key code:", keyCode)
+
+			// t := eventKey.Type()
+			// switch t {
+			// case gdk.EVENT_KEY_PRESS:
+			// 	fmt.Println("key press")
+			// case gdk.EVENT_KEY_RELEASE:
+			// 	fmt.Println("key release")
+			// }
 		})
 
 	return da, nil
-}
-
-func runPeriodic(period time.Duration, f func() bool) {
-	t := time.Now()
-	for {
-		if !f() {
-			return
-		}
-		// calc sleep
-		t = t.Add(period)
-		d := t.Sub(time.Now())
-		if d > 0 {
-			time.Sleep(d)
-		}
-	}
 }

@@ -5,7 +5,7 @@ import (
 )
 
 type ColorRGBf struct {
-	R, G, B float64
+	R, G, B float64 // [0..1]
 }
 
 func RGBf(r, g, b float64) ColorRGBf {
@@ -13,7 +13,19 @@ func RGBf(r, g, b float64) ColorRGBf {
 		R: r,
 		G: g,
 		B: b,
-	}.Normalize()
+	}
+}
+
+func hexToRGBf(x uint32) ColorRGBf {
+	const (
+		mask = 0xFF
+		max  = 255
+	)
+	return ColorRGBf{
+		R: float64((x>>16)&mask) / max,
+		G: float64((x>>8)&mask) / max,
+		B: float64((x>>0)&mask) / max,
+	}
 }
 
 func (a ColorRGBf) Normalize() ColorRGBf {
@@ -33,12 +45,16 @@ func setColor(context *cairo.Context, a ColorRGBf) {
 	//context.SetSourceRGBA(a.R, a.G, a.B, 1)
 }
 
+func setColorAlpha(context *cairo.Context, a ColorRGBf, alpha float64) {
+	context.SetSourceRGBA(a.R, a.G, a.B, alpha)
+}
+
 func ColorLerp(c0, c1 ColorRGBf, t float64) ColorRGBf {
 	return ColorRGBf{
 		R: lerp(c0.R, c1.R, t),
 		G: lerp(c0.G, c1.G, t),
 		B: lerp(c0.B, c1.B, t),
-	}.Normalize()
+	}
 }
 
 func Gray(x float64) ColorRGBf {

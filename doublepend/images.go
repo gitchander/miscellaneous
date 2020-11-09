@@ -33,7 +33,7 @@ func makeImages() error {
 		0: Pendulum{
 			Mass:   50,
 			Length: 120,
-			Theta:  math.Pi / 2,
+			Theta:  math.Pi * 0.5,
 		},
 		1: Pendulum{
 			Mass:   50,
@@ -56,7 +56,7 @@ func makeImages() error {
 	for i, dt := range dts {
 
 		dp1 := dp
-		_, _, x2, y2 := getDPCoords(&dp1)
+		_, _, x2, y2 := getDPCoords(&dp1, lengthScale)
 		prev := Point2f{X: x2, Y: y2}
 
 		t := float64(i) / float64(len(dts)-1)
@@ -109,7 +109,7 @@ func makeImages() error {
 
 				nextStep(n.dp, deltaTime)
 
-				_, _, x2, y2 := getDPCoords(n.dp)
+				_, _, x2, y2 := getDPCoords(n.dp, lengthScale)
 				n.prev = Point2f{X: x2, Y: y2}
 
 				context.LineTo(x2, y2)

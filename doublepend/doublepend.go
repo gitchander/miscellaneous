@@ -16,7 +16,7 @@ func (p *DoublePendulum) Clone() *DoublePendulum {
 	return nil
 }
 
-func getDPCoords(dp *DoublePendulum) (x1, y1, x2, y2 float64) {
+func getDPCoords(dp *DoublePendulum, scale float64) (x1, y1, x2, y2 float64) {
 
 	var (
 		p1 = &(dp[0])
@@ -24,8 +24,8 @@ func getDPCoords(dp *DoublePendulum) (x1, y1, x2, y2 float64) {
 	)
 
 	var (
-		r1 = p1.Length * lengthScale
-		r2 = p2.Length * lengthScale
+		r1 = p1.Length * scale
+		r2 = p2.Length * scale
 
 		a1 = p1.Theta
 		a2 = p2.Theta

@@ -3,22 +3,16 @@ package main
 import (
 	"image"
 	"sync"
-	"time"
 
 	"github.com/gotk3/gotk3/cairo"
 )
 
-type Sample struct {
-	dp      *DoublePendulum
-	palette Palette
-}
-
 type Engine struct {
 	guard sync.Mutex
 
-	samples      []*Sample
-	deltaTimeSec float64
-	background   ColorRGBf
+	samples    []*Sample
+	background ColorRGBf
+	pause      bool
 
 	allocSize image.Point
 	size      image.Point
@@ -28,21 +22,24 @@ type Engine struct {
 
 	contextTrace     *cairo.Context
 	contextPendulums *cairo.Context
-
-	prev OptPoint2f
 }
 
-var _ Drawer = &Engine{}
-
-func NewEngine(samples []*Sample, deltaTime time.Duration, background ColorRGBf) *Engine {
+func NewEngine(samples []*Sample, background ColorRGBf) *Engine {
 	return &Engine{
-		samples:      samples,
-		deltaTimeSec: deltaTime.Seconds(),
-		background:   background,
+		samples:    samples,
+		background: background,
 	}
 }
 
-func (p *Engine) Resize(width, height int) {
+func (p *Engine) SetSamples(samples []*Sample) {
+	p.guard.Lock()
+	{
+		p.samples = samples
+	}
+	p.guard.Unlock()
+}
+
+func (p *Engine) _Resize(width, height int) {
 	p.guard.Lock()
 	{
 		size := image.Point{
@@ -77,7 +74,7 @@ func (p *Engine) Resize(width, height int) {
 	p.guard.Unlock()
 }
 
-func (p *Engine) Draw(context *cairo.Context) {
+func (p *Engine) _Draw(context *cairo.Context) {
 	p.guard.Lock()
 	{
 		if p.surfacePendulums != nil {
@@ -89,15 +86,17 @@ func (p *Engine) Draw(context *cairo.Context) {
 }
 
 // UpdateTime
-func (p *Engine) CalcNextStep() {
+func (p *Engine) CalcNextStep(deltaTime float64) {
 	p.guard.Lock()
 	{
-		p.renderNext()
+		if !p.pause {
+			p.calcNextStep(deltaTime)
+		}
 	}
 	p.guard.Unlock()
 }
 
-func (p *Engine) renderNext() {
+func (p *Engine) calcNextStep(deltaTime float64) {
 
 	if p.surfacePendulums == nil {
 		return
@@ -113,8 +112,9 @@ func (p *Engine) renderNext() {
 	)
 
 	for _, sample := range p.samples {
-		nextStep(sample.dp, p.deltaTimeSec)
-		p.renderSample(x0, y0, sample)
+		sample.calcNextStep(deltaTime)
+		sample.renderTail(p.contextPendulums, x0, y0)
+		sample.renderSample(p.contextPendulums, x0, y0)
 	}
 
 	// draw anchor circle
@@ -122,64 +122,15 @@ func (p *Engine) renderNext() {
 		c.Arc(x0, y0, 3, 0, Tau)
 		setColor(c, Gray50)
 		c.FillPreserve()
-		setColor(c, Black)
+		setColor(c, Gray25)
 		c.Stroke()
 	}
 }
 
-func (p *Engine) renderSample(x0, y0 float64, sample *Sample) {
-
-	x1, y1, x2, y2 := getDPCoords(sample.dp)
-
-	//-------------------------------------------------------
-	if false {
-
-		c := p.contextTrace
-
-		if p.prev.Present {
-			c.Save()
-			c.Translate(x0, y0)
-			c.MoveTo(p.prev.Value.X, p.prev.Value.Y)
-			c.LineTo(x2, y2)
-			c.SetLineWidth(1)
-			setColor(c, sample.palette.Path)
-			c.Stroke()
-			c.Restore()
-		}
-
-		p.prev.Value.X = x2
-		p.prev.Value.Y = y2
-		p.prev.Present = true
+func (p *Engine) Pause() {
+	p.guard.Lock()
+	{
+		p.pause = !(p.pause)
 	}
-
-	//-------------------------------------------------------
-	c := p.contextPendulums
-
-	c.Save()
-
-	//c.SetSourceSurface(p.surfaceTrace, 0, 0)
-
-	c.Translate(x0, y0)
-
-	radius := 7.0
-
-	c.MoveTo(0, 0)
-	c.LineTo(x1, y1)
-	c.LineTo(x2, y2)
-	setColor(c, sample.palette.Foreground)
-	c.Stroke()
-
-	c.Arc(x1, y1, radius, 0, Tau)
-	setColor(c, sample.palette.MassFill)
-	c.FillPreserve()
-	setColor(c, sample.palette.MassStroke)
-	c.Stroke()
-
-	c.Arc(x2, y2, radius, 0, Tau)
-	setColor(c, sample.palette.MassFill)
-	c.FillPreserve()
-	setColor(c, sample.palette.MassStroke)
-	c.Stroke()
-
-	c.Restore()
+	p.guard.Unlock()
 }
