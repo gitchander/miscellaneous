@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -71,11 +72,23 @@ func nextStep(dp *DoublePendulum, deltaTimeSec float64) {
 
 	a1_a, a2_a := calc(m1, m2, r1, r2, a1, a2, a1_v, a2_v)
 
+	a1_a = clampFloat64(a1_a, -max, max)
+	a2_a = clampFloat64(a2_a, -max, max)
+
+	//checkMax("a1_a", a1_a)
+	//checkMax("a2_a", a2_a)
+
 	a1_v += a1_a * dt
 	a2_v += a2_a * dt
 
+	checkMax("a1_v", a1_v)
+	checkMax("a2_v", a2_v)
+
 	a1 += a1_v * dt
 	a2 += a2_v * dt
+
+	checkMax("a1", a1)
+	checkMax("a2", a2)
 
 	if false {
 		const coef = 0.999
@@ -85,11 +98,25 @@ func nextStep(dp *DoublePendulum, deltaTimeSec float64) {
 
 	//---------------------------------------------------
 
-	p1.Theta = angleNorm(a1)
-	p2.Theta = angleNorm(a2)
+	p1.Theta = a1
+	p2.Theta = a2
+
+	// p1.Theta = angleNorm(a1)
+	// p2.Theta = angleNorm(a2)
+
+	//---------------------------------------------------
 
 	p1.Velocity = a1_v
 	p2.Velocity = a2_v
+}
+
+const max = 1e+20
+
+func checkMax(prefix string, x float64) {
+	if math.Abs(x) > max {
+		err := fmt.Errorf("%s: %v", prefix, x)
+		panic(err)
+	}
 }
 
 // type Thetas struct {

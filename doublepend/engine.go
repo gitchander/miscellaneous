@@ -120,7 +120,8 @@ func (p *Engine) calcNextStep(deltaTime float64) {
 	// draw anchor circle
 	{
 		c.Arc(x0, y0, 3, 0, Tau)
-		setColor(c, Gray50)
+		setColor(c, Gray75)
+		//setColor(c, White)
 		c.FillPreserve()
 		setColor(c, Gray25)
 		c.Stroke()

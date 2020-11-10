@@ -106,7 +106,8 @@ func (sample *Sample) renderSample(c *cairo.Context, x0, y0 float64) {
 	c.MoveTo(0, 0)
 	c.LineTo(x1, y1)
 	c.LineTo(x2, y2)
-	setColor(c, sample.palette.Foreground)
+	//setColor(c, sample.palette.Foreground)
+	setColorAlpha(c, sample.palette.Foreground, 0.5)
 	c.Stroke()
 
 	c.SetLineWidth(1)

@@ -121,7 +121,11 @@ func Run(size image.Point, samples []*Sample, number int) error {
 
 	fmt.Println("deltaTime:", deltaTime)
 
-	background := RGBf(1, 1, 1)
+	var (
+		background = White
+		// background = Black
+	)
+
 	engine := NewEngine(samples, background)
 
 	eh := &engineEventHandler{

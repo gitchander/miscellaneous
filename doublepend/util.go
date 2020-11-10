@@ -43,7 +43,7 @@ func ceilPowerOfTwo(x int) int {
 	return d
 }
 
-func angleNorm(angle float64) float64 {
+func _angleNorm(angle float64) float64 {
 	for angle < -math.Pi {
 		angle += Tau
 	}
