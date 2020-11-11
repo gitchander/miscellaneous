@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -43,13 +44,41 @@ func ceilPowerOfTwo(x int) int {
 	return d
 }
 
-func _angleNorm(angle float64) float64 {
+var (
+	//angleNormalize = angleNormalizeV1
+	angleNormalize = angleNormalizeV2
+)
+
+// [-Pi, +Pi)
+func angleNormalizeV1(angle float64) float64 {
 	for angle < -math.Pi {
 		angle += Tau
 	}
-	for angle > math.Pi {
+	for angle >= math.Pi {
 		angle -= Tau
 	}
+	return angle
+}
+
+// a % b
+func modFloat64(a, b float64) float64 {
+	m := a - math.Floor(a/b)*b
+	if m < 0 {
+		m += b
+	}
+	return m
+}
+
+func angleNormalizeV2(angle float64) float64 {
+
+	angle += math.Pi
+
+	// [0, Tau)
+	angle = modFloat64(angle, Tau)
+	//angle = math.Mod(angle, Tau)
+
+	angle -= math.Pi
+
 	return angle
 }
 
@@ -67,4 +96,20 @@ func mod(x, y int) int {
 		m += y
 	}
 	return m
+}
+
+func checkMax(prefix string, x, max float64) {
+	if math.Abs(x) > max {
+		err := fmt.Errorf("%s: %v", prefix, x)
+		panic(err)
+	}
+}
+
+const (
+	minVelocity = -1e+20
+	maxVelocity = +1e+20
+)
+
+func clampVelocity(velocity float64) float64 {
+	return clampFloat64(velocity, minVelocity, maxVelocity)
 }

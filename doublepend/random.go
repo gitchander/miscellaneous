@@ -127,7 +127,32 @@ func randSamplesV2(r *rand.Rand, n int) []*Sample {
 	return samples
 }
 
+func randSamplesV3(r *rand.Rand, n int) []*Sample {
+
+	dMass := (massMax - massMin) / 100 // 1%
+	dMass *= 0.001
+
+	dps := make([]*DoublePendulum, n)
+	dp := randDoublePendulum(r)
+	mass := dp[1].Mass
+	for i := 0; i < n; i++ {
+		clone := dp.Clone()
+		p := &(clone[1])
+
+		p.Mass = mass
+		mass += dMass
+
+		dps[i] = clone
+	}
+	samples := make([]*Sample, n)
+	for i, dp := range dps {
+		samples[i] = newSample(dp, GetPalette(i))
+	}
+	return samples
+}
+
 func randSamples(r *rand.Rand, n int) []*Sample {
 	//return randSamplesV1(r, n)
-	return randSamplesV2(r, n)
+	//return randSamplesV2(r, n)
+	return randSamplesV3(r, n)
 }
