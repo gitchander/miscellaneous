@@ -22,7 +22,7 @@ func main() {
 	)
 
 	flag.IntVar(&doorsNumber, "doors", 3, "number of doors")
-	flag.BoolVar(&changeOfChoice, "change", true, "change of choice")
+	flag.BoolVar(&changeOfChoice, "change", false, "change of choice")
 	flag.IntVar(&samplesNumber, "samples", 1000000, "number of samples")
 
 	flag.Parse()
@@ -237,24 +237,4 @@ func (p DoorSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 func removeDoor(doors []Door, i int) []Door {
 	n := removeElement(DoorSlice(doors), i)
 	return doors[:n]
-}
-
-var getRand = func() func() *rand.Rand {
-	rs := make(chan *rand.Rand)
-	go func() {
-		for {
-			r := randNow()
-			for i := 0; i < 1000; i++ {
-				seed := r.Int63()
-				rs <- rand.New(rand.NewSource(seed))
-			}
-		}
-	}()
-	return func() *rand.Rand {
-		return <-rs
-	}
-}()
-
-func randNow() *rand.Rand {
-	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }

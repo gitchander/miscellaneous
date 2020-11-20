@@ -76,7 +76,7 @@ func runRandom() {
 
 	var number int
 
-	flag.IntVar(&number, "number", 1, "number of double pendulums")
+	flag.IntVar(&number, "number", 5, "number of double pendulums")
 
 	flag.Parse()
 
