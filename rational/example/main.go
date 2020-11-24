@@ -8,11 +8,13 @@ import (
 )
 
 func main() {
+	set()
+	mul()
 	parseTest()
 }
 
 func set() {
-	a := rat.Rat(0, -5)
+	a := rat.Rat(1, -5)
 	fmt.Println(a)
 }
 
@@ -28,7 +30,7 @@ func mul() {
 }
 
 func parseTest() {
-	s := "3.1415"
+	s := "3.14159265"
 	r, err := rat.Parse(s)
 	if err != nil {
 		log.Fatal(err)

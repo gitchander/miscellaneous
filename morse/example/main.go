@@ -8,13 +8,19 @@ import (
 )
 
 func main() {
+	samples := []string{
+		"SOS",
+		"MORSE CODE",
+	}
+	for _, sample := range samples {
+		data, err := morse.Units(sample)
+		checkError(err)
+		fmt.Println(string(data))
+	}
+}
 
-	text := "SOS"
-
-	data, err := morse.Units(text)
+func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(string(data))
 }

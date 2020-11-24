@@ -219,15 +219,18 @@ func cropMax(x, max int) int {
 	return x
 }
 
-func (w *World) Update(screen *ebiten.Image) error {
+func (w *World) Update() error {
+	w.Progress()
+	return nil
+}
+
+func (w *World) Draw(screen *ebiten.Image) {
 
 	w.guard.Lock()
 	defer w.guard.Unlock()
 
 	w.drawImage(w.noiseImage)
-	if err := screen.ReplacePixels(w.noiseImage.Pix); err != nil {
-		return err
-	}
+	screen.ReplacePixels(w.noiseImage.Pix)
 
 	if key, ok := w.keys[ebiten.KeySpace]; ok {
 		key.Update()
@@ -298,6 +301,9 @@ func (w *World) Update(screen *ebiten.Image) error {
 			w.randomSeed(1000)
 		}
 	}
+}
 
-	return nil
+func (w *World) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	//fmt.Println(outsideWidth, outsideHeight)
+	return w.size.X, w.size.Y
 }

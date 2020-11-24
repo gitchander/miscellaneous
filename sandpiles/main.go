@@ -24,7 +24,7 @@ func main() {
 		fWidth  = flag.Int("width", 256, "")
 		fHeight = flag.Int("height", 256, "")
 		fState  = flag.Int("state", 4, "initial state for cells")
-		fScale  = flag.Float64("scale", 2, "")
+		fScale  = flag.Int("scale", 2, "scale factor")
 	)
 
 	flag.Parse()
@@ -53,7 +53,18 @@ func main() {
 	//w.FillTest(20)
 	//w.RandomSeed(population)
 
-	err := ebiten.Run(w.Update, size.X, size.Y, scale, "Sandpile")
+	ebiten.SetVsyncEnabled(true)
+	ebiten.SetWindowSize(scale*size.X, scale*size.Y)
+	ebiten.SetWindowTitle("sandpiles")
+	//ebiten.SetWindowResizable(true)
+	//ebiten.SetWindowDecorated(true)
+	//ebiten.SetCursorMode(ebiten.CursorModeHidden)
+
+	err := ebiten.RunGame(w)
+	checkError(err)
+}
+
+func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}

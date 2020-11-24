@@ -2,19 +2,58 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"sort"
-	"strings"
 )
 
-const (
-	unitSignalON  = '1'
-	unitSignalOFF = '0'
-)
+// const (
+// 	unitSignalON  = '1'
+// 	unitSignalOFF = '0'
+// )
 
 // const (
 // 	unitSignalON  = '='
 // 	unitSignalOFF = '.'
 // )
+
+// func decodeSignal(b byte) (signal bool, ok bool) {
+// 	switch b {
+// 	case '.':
+// 		signal = false
+// 		ok = true
+// 	case '=':
+// 		signal = true
+// 		ok = true
+// 	default:
+// 		ok = false
+// 	}
+// 	return
+// }
+
+func decodeSignal(b byte) (signal bool, ok bool) {
+	switch b {
+	case '0':
+		signal = false
+		ok = true
+	case '1':
+		signal = true
+		ok = true
+	default:
+		ok = false
+	}
+	return
+}
+
+const (
+	durDot  = 1 // unit
+	durDash = 3 // units
+)
+
+const (
+	durSymbolSpace = 1
+	durLetterSpace = 3
+	durWordSpace   = 7
+)
 
 func mapKeys(m map[int]int) []int {
 	keys := make([]int, 0, len(m))
@@ -24,32 +63,90 @@ func mapKeys(m map[int]int) []int {
 	return keys
 }
 
-func DecodeBits(bits string) string {
+type solid struct {
+	signalIsON bool
+	width      int
+}
 
-	bits = strings.Trim(bits, "0")
+func parseSolids(bits string) []solid {
+
+	var ds []solid
+
+	walkSolidBytes(bits, func(b byte, width int) bool {
+		signal, ok := decodeSignal(b)
+		if !ok {
+			panic("invalid bits")
+		}
+		d := solid{
+			signalIsON: signal,
+			width:      width,
+		}
+		ds = append(ds, d)
+		return true
+	})
+
+	return ds
+}
+
+func walkSolidBytes(bits string, f func(b byte, width int) bool) {
+
+	var (
+		k = 0
+		n = len(bits)
+	)
+
+	for i := 1; i < n; i++ {
+		if bits[i] == bits[k] {
+			continue
+		}
+		width := i - k
+		if !f(bits[k], width) {
+			return
+		}
+
+		k = i
+	}
+
+	if k < n {
+		width := n - k
+		if !f(bits[k], width) {
+			return
+		}
+	}
+}
+
+func trimSolids(ds []solid) []solid {
+
+	for len(ds) > 0 {
+		if ds[0].signalIsON {
+			break
+		}
+		ds = ds[1:]
+	}
+
+	for len(ds) > 0 {
+		n := len(ds)
+		if ds[n-1].signalIsON {
+			break
+		}
+		ds = ds[:n-1]
+	}
+
+	return ds
+}
+
+func calcN(ds []solid) int {
 
 	var (
 		mapOFF = make(map[int]int)
 		mapON  = make(map[int]int)
 	)
 
-	k := 0
-	n := len(bits)
-	for i := 0; i < n; i++ {
-		bit := bits[i]
-		if i > 0 {
-			if bit != bits[k] {
-				length := i - k
-				switch bits[k] {
-				case unitSignalOFF:
-					mapOFF[length]++
-				case unitSignalON:
-					mapON[length]++
-				default:
-					panic("invalid bits")
-				}
-				k = i
-			}
+	for _, d := range ds {
+		if d.signalIsON {
+			mapON[d.width]++
+		} else {
+			mapOFF[d.width]++
 		}
 	}
 
@@ -62,12 +159,79 @@ func DecodeBits(bits string) string {
 	sort.Ints(csOFF)
 	sort.Ints(csON)
 
-	fmt.Println("cs OFF:", csOFF)
-	fmt.Println("cs ON: ", csON)
+	fmt.Println("keys OFF:", csOFF)
+	fmt.Println("keys ON: ", csON)
 
-	//timeDuration:= 2
+	var sum float64
+	var count int
 
-	return bits
+	if m := len(csON); m > 0 {
+		sum += float64(csON[0]) / durDot
+		count++
+		if m > 1 {
+			sum += float64(csON[1]) / durDash
+			count++
+		}
+	}
+	if m := len(csOFF); m > 0 {
+		sum += float64(csOFF[0]) / durSymbolSpace
+		count++
+		if m > 1 {
+			sum += float64(csOFF[1]) / durLetterSpace
+			count++
+			if m > 2 {
+				sum += float64(csOFF[2]) / durWordSpace
+				count++
+			}
+		}
+	}
+
+	Nf := sum / float64(count)
+	N := int(math.Round(Nf))
+	fmt.Println("Nf:", Nf)
+	fmt.Println("N:", N)
+
+	return N
+}
+
+func DecodeBits(bits string) string {
+
+	ds := parseSolids(bits)
+	ds = trimSolids(ds)
+
+	n := calcN(ds)
+	fmt.Println(n)
+
+	//fmt.Println("solids:", ds)
+
+	vs := make([]byte, 0, len(ds))
+
+	for _, d := range ds {
+
+		w := (d.width / n)
+
+		if d.signalIsON {
+			switch w {
+			case durDot: // 1
+				vs = append(vs, '.')
+			case durDash: // 3 // units
+				vs = append(vs, '-')
+			default:
+				vs = append(vs, '.')
+			}
+		} else {
+			switch w {
+			case durSymbolSpace: // 1
+			case durLetterSpace: // 3
+				vs = append(vs, ' ')
+			case durWordSpace: // 7
+				vs = append(vs, []byte("   ")...)
+			default:
+			}
+		}
+	}
+
+	return string(vs)
 }
 
 func DecodeMorse(morseCode string) string {
