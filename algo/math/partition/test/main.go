@@ -10,7 +10,7 @@ import (
 func main() {
 	//testOne()
 	testOneWalk()
-	testRange()
+	//testRange()
 	//testRangeTest()
 }
 
@@ -24,7 +24,9 @@ func testOne() {
 
 func testOneWalk() {
 
-	n := 5
+	start := time.Now()
+
+	n := 7
 
 	f := func(as []int) {
 		fmt.Println(as)
@@ -32,6 +34,7 @@ func testOneWalk() {
 
 	p := partition.PartitionWalk(n, f)
 	fmt.Printf("p(%d) = %d\n", n, p)
+	fmt.Println(time.Since(start))
 }
 
 func testRange() {
