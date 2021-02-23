@@ -8,9 +8,17 @@ import (
 )
 
 func main() {
-	set()
-	mul()
-	parseTest()
+	sample1()
+	// set()
+	// mul()
+	// parseTest()
+}
+
+func sample1() {
+	a := rat.Rat(2, 4)
+	b := rat.Rat(3, 6)
+	c := a.Add(b)
+	fmt.Println(c)
 }
 
 func set() {
