@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // https://en.wikipedia.org/wiki/Abelian_sandpile_model

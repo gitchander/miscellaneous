@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"sync"
 
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var palette = []color.Color{

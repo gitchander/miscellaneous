@@ -1,7 +1,7 @@
 package cbig
 
 import (
-	"bigmy/cbits"
+	"github.com/gitchander/miscellaneous/bigmy/cbits"
 )
 
 // ----------------------------------------------------------------------------

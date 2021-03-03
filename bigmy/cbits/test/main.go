@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"time"
 
-	"bigmy/cbits"
+	"github.com/gitchander/miscellaneous/bigmy/cbits"
 )
 
 func main() {

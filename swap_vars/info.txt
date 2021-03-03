@@ -3,4 +3,4 @@ How to swap two numbers without using a temporary variable?
 XOR swap algorithm:
 https://en.wikipedia.org/wiki/XOR_swap_algorithm
 
-// https://www.geeksforgeeks.org/swap-two-numbers-without-using-temporary-variable/
+https://www.geeksforgeeks.org/swap-two-numbers-without-using-temporary-variable/

@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"pointhm"
+
+	"github.com/gitchander/miscellaneous/pointhm"
 )
 
 func main() {

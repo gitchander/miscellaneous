@@ -9,7 +9,8 @@ import (
 // https://en.wikipedia.org/wiki/Rational_number
 
 type Rational struct {
-	p, q int // p / q
+	p int // numerator
+	q int // denominator
 }
 
 var zero = RatInt(0)

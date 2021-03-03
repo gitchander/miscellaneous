@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"bits"
+	"github.com/gitchander/miscellaneous/bits"
 )
 
 func main() {

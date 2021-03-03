@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	ping1 "github.com/paulstuart/ping"
-	ping3 "github.com/sparrc/go-ping"
-	ping2 "github.com/tatsushid/go-fastping"
+	ping1 "github.com/go-ping/ping"
+	ping2 "github.com/paulstuart/ping"
+	ping3 "github.com/tatsushid/go-fastping"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func testPing1_V1() {
 		fmt.Println("no args")
 		return
 	}
-	err := ping1.Pinger(os.Args[1], 5)
+	err := ping2.Pinger(os.Args[1], 5)
 	if err == nil {
 		fmt.Println("ok")
 		return
@@ -29,11 +29,11 @@ func testPing1_V1() {
 }
 
 func testPing1_V2() {
-	fmt.Println(ping1.Ping(os.Args[1], 5))
+	fmt.Println(ping2.Ping(os.Args[1], 5))
 }
 
 func testPing2() {
-	p := ping2.NewPinger()
+	p := ping3.NewPinger()
 	ra, err := net.ResolveIPAddr("ip4:icmp", os.Args[1])
 	if err != nil {
 		fmt.Println(err)
@@ -53,7 +53,7 @@ func testPing2() {
 }
 
 func testPing3_V1() {
-	pinger, err := ping3.NewPinger("www.google.com")
+	pinger, err := ping1.NewPinger("www.google.com")
 	if err != nil {
 		panic(err)
 	}
@@ -64,16 +64,16 @@ func testPing3_V1() {
 }
 
 func testPing3_V2() {
-	pinger, err := ping3.NewPinger("www.google.com")
+	pinger, err := ping1.NewPinger("www.google.com")
 	if err != nil {
 		panic(err)
 	}
 
-	pinger.OnRecv = func(pkt *ping3.Packet) {
+	pinger.OnRecv = func(pkt *ping1.Packet) {
 		fmt.Printf("%d bytes from %s: icmp_seq=%d time=%v\n",
 			pkt.Nbytes, pkt.IPAddr, pkt.Seq, pkt.Rtt)
 	}
-	pinger.OnFinish = func(stats *ping3.Statistics) {
+	pinger.OnFinish = func(stats *ping1.Statistics) {
 		fmt.Printf("\n--- %s ping statistics ---\n", stats.Addr)
 		fmt.Printf("%d packets transmitted, %d packets received, %v%% packet loss\n",
 			stats.PacketsSent, stats.PacketsRecv, stats.PacketLoss)
