@@ -8,10 +8,10 @@ import (
 )
 
 func main() {
-	sample1()
+	// sample1()
 	// set()
 	// mul()
-	// parseTest()
+	parseTest()
 }
 
 func sample1() {
