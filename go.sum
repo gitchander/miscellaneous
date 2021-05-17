@@ -34,10 +34,6 @@ github.com/gordonklaus/portaudio v0.0.0-20200911161147-bb74aa485641 h1:B7ADnac3Y
 github.com/gordonklaus/portaudio v0.0.0-20200911161147-bb74aa485641/go.mod h1:HfYnZi/ARQKG0dwH5HNDmPCHdLiFiBf+SI7DbhW7et4=
 github.com/gosnmp/gosnmp v1.30.0 h1:P6uUvPaoZCZh2EXvSUIgsxYZ1vdD/Sonl2BSVCGieG8=
 github.com/gosnmp/gosnmp v1.30.0/go.mod h1:EIp+qkEpXoVsyZxXKy0AmXQx0mCHMMcIhXXvNDMpgF0=
-github.com/gotk3/gotk3 v0.5.2 h1:jbSFvUNMfo3ImM6BWBAkNUxY5piqP3eTc1YFbYy9ecU=
-github.com/gotk3/gotk3 v0.5.2/go.mod h1:/hqFpkNa9T3JgNAE2fLvCdov7c5bw//FHNZrZ3Uv9/Q=
-github.com/gotk3/gotk3 v0.5.3-0.20210223154815-289cfb6dbf32 h1:wE6C/HgLUBHi8YhHlCEulrmQMntVl4PFdh3kA0sWyAY=
-github.com/gotk3/gotk3 v0.5.3-0.20210223154815-289cfb6dbf32/go.mod h1:/hqFpkNa9T3JgNAE2fLvCdov7c5bw//FHNZrZ3Uv9/Q=
 github.com/gotk3/gotk3 v0.5.3-0.20210514043925-3f44af595c5e h1:+gTJ76gEbkR47suP+ANvcLl/whUwJWbDP5XvPkI3B0E=
 github.com/gotk3/gotk3 v0.5.3-0.20210514043925-3f44af595c5e/go.mod h1:/hqFpkNa9T3JgNAE2fLvCdov7c5bw//FHNZrZ3Uv9/Q=
 github.com/hajimehoshi/bitmapfont/v2 v2.1.0/go.mod h1:2BnYrkTQGThpr/CY6LorYtt/zEPNzvE/ND69CRTaHMs=

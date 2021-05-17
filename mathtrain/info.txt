@@ -1,0 +1,2 @@
+https://linuxconfig.org/children-multiplication-tables-practice-test-with-bash-script-on-linux
+github.com/linuxconfig/multiplication-tables-practice
