@@ -65,7 +65,6 @@ var charMapEnglish = map[rune][]int{
 	'(':  {dash, dot, dash, dash, dot},
 	')':  {dash, dot, dash, dash, dot, dash},
 	'+':  {dot, dash, dot, dash, dot},
-	'×':  {dash, dot, dot, dash},
 	'@':  {dot, dash, dash, dot, dash, dot},
 }
 
