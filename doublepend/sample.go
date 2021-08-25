@@ -2,19 +2,24 @@ package main
 
 import (
 	"container/ring"
+	"encoding/json"
+	"io/ioutil"
 
 	"github.com/gotk3/gotk3/cairo"
 )
 
-const lengthScale = 100.0
+const (
+	lengthScale = 100.0
+	// lengthScale = 350.0
+)
 
 type Sample struct {
-	dp      *DoublePendulum
+	dp      DoublePendulum
 	palette Palette
 	tail    *ring.Ring
 }
 
-func newSample(dp *DoublePendulum, palette Palette) *Sample {
+func newSample(dp DoublePendulum, palette Palette) *Sample {
 	return &Sample{
 		dp:      dp,
 		palette: palette,
@@ -128,10 +133,42 @@ func (sample *Sample) renderSample(c *cairo.Context, x0, y0 float64) {
 }
 
 func (sample *Sample) calcNextStep(deltaTime float64) {
-	nextStep(sample.dp, deltaTime)
+	nextStep(&(sample.dp), deltaTime)
 
 	_, _, x2, y2 := getDPCoords(sample.dp, lengthScale)
 
 	sample.tail.Value = Pt2f(x2, y2)
 	sample.tail = sample.tail.Next()
+}
+
+func saveSamplesFile(filename string, samples []*Sample) error {
+
+	vs := make([]DoublePendulum, len(samples))
+	for i, sample := range samples {
+		vs[i] = sample.dp
+	}
+
+	data, err := json.MarshalIndent(vs, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filename, data, 0666)
+}
+
+func loadSamplesFile(filename string) ([]*Sample, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	var dps []DoublePendulum
+	err = json.Unmarshal(data, &dps)
+	if err != nil {
+		return nil, err
+	}
+	samples := make([]*Sample, len(dps))
+	for i, dp := range dps {
+		samples[i] = newSample(dp, GetPalette(i))
+	}
+	return samples, nil
 }

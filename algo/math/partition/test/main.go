@@ -26,7 +26,7 @@ func testOneWalk() {
 
 	start := time.Now()
 
-	n := 7
+	n := 8
 
 	f := func(as []int) {
 		fmt.Println(as)

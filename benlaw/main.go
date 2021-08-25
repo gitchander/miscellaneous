@@ -19,7 +19,7 @@ import (
 
 func main() {
 	test1()
-	//test2()
+	test2()
 }
 
 var colorTable = []color.Color{

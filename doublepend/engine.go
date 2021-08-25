@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"sync"
 
@@ -134,4 +135,15 @@ func (p *Engine) Pause() {
 		p.pause = !(p.pause)
 	}
 	p.guard.Unlock()
+}
+
+func (p *Engine) SaveFileDP() error {
+
+	filename := makeFilename("double_pendulums_", ".json")
+	fmt.Println("filename:", filename)
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	return saveSamplesFile(filename, p.samples)
 }

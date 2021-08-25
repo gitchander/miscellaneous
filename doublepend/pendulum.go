@@ -1,8 +1,8 @@
 package main
 
 type Pendulum struct {
-	Mass     float64
-	Length   float64
-	Theta    float64
-	Velocity float64
+	Mass     float64 `json:"mass"`
+	Length   float64 `json:"length"`
+	Theta    float64 `json:"theta"`
+	Velocity float64 `json:"velocity"`
 }

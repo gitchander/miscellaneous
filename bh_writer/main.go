@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// BlackHole writer
 type BlackHole struct {
 	mass int
 }
@@ -21,15 +22,19 @@ func (p BlackHole) Mass() int {
 	return p.mass
 }
 
-func Merge(a, b BlackHole) BlackHole {
+func Merge(bs ...BlackHole) BlackHole {
+	var mass int
+	for _, b := range bs {
+		mass += b.mass
+	}
 	return BlackHole{
-		mass: a.mass + b.mass,
+		mass: mass,
 	}
 }
 
 func main() {
 	var b BlackHole
-	data := []byte("Hello, Black hole!")
+	data := []byte("Hello, black hole writer!")
 	b.Write(data)
 	fmt.Println("mass of black hole equal", b.Mass())
 }

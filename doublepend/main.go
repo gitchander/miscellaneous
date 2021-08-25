@@ -60,7 +60,7 @@ func Main() {
 	}
 
 	samples := []*Sample{
-		newSample(&(c.DP), GetPalette(0)),
+		newSample(c.DP, GetPalette(0)),
 	}
 
 	err := Run(c.Size, samples, 1)
@@ -75,14 +75,24 @@ type Config struct {
 func runRandom() {
 
 	var number int
+	var dpFileName string
 
 	flag.IntVar(&number, "number", 5, "number of double pendulums")
+	flag.StringVar(&dpFileName, "dpname", "", "double pendulums file name")
 
 	flag.Parse()
 
 	r := newRandNow()
 
-	samples := randSamples(r, number)
+	var samples []*Sample
+
+	if dpFileName == "" {
+		samples = randSamples(r, number)
+	} else {
+		vs, err := loadSamplesFile(dpFileName)
+		checkError(err)
+		samples = vs
+	}
 
 	size := image.Point{X: 800, Y: 800}
 

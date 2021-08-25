@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"strings"
+	"time"
 )
 
 const Tau = 2 * math.Pi
@@ -73,7 +75,7 @@ func angleNormalizeV2(angle float64) float64 {
 
 	angle += math.Pi
 
-	// [0, Tau)
+	// [0, 2*Pi) = [0, Tau)
 	angle = modFloat64(angle, Tau)
 	//angle = math.Mod(angle, Tau)
 
@@ -112,4 +114,37 @@ const (
 
 func clampVelocity(velocity float64) float64 {
 	return clampFloat64(velocity, minVelocity, maxVelocity)
+}
+
+//------------------------------------------------------------------------------
+var (
+	//strCat = strCat1
+	strCat = strCat2
+)
+
+func strCat1(vs ...string) string {
+	var b strings.Builder
+	for _, v := range vs {
+		b.WriteString(v)
+	}
+	return b.String()
+}
+
+func strCat2(vs ...string) string {
+	return strings.Join(vs, "")
+}
+
+//------------------------------------------------------------------------------
+var (
+	// time.RFC3339 - "2006-01-02T15:04:05"
+
+	dateTimeFormat = strCat(
+		"2006", "01", "02", // date (YYYYMMDD)
+		"15", "04", "05", // time (HHMMSS)
+	)
+)
+
+func makeFilename(prefix, extention string) string {
+	st := time.Now().Format(dateTimeFormat)
+	return prefix + st + extention
 }

@@ -46,7 +46,7 @@ func makeImages() error {
 	dts := []float64{0.1, 0.05, 0.01, 0.001, 0.0001}
 
 	type node struct {
-		dp   *DoublePendulum
+		dp   DoublePendulum
 		dt   float64
 		prev Point2f
 		cl   ColorRGBf
@@ -56,7 +56,7 @@ func makeImages() error {
 	for i, dt := range dts {
 
 		dp1 := dp
-		_, _, x2, y2 := getDPCoords(&dp1, lengthScale)
+		_, _, x2, y2 := getDPCoords(dp1, lengthScale)
 		prev := Point2f{X: x2, Y: y2}
 
 		t := float64(i) / float64(len(dts)-1)
@@ -65,7 +65,7 @@ func makeImages() error {
 		//fmt.Println(t, cl)
 
 		ns[i] = &node{
-			dp:   &dp1,
+			dp:   dp1,
 			dt:   dt,
 			prev: prev,
 			cl:   cl,
@@ -107,7 +107,7 @@ func makeImages() error {
 			t := 0.0
 			for t < t_max {
 
-				nextStep(n.dp, deltaTime)
+				nextStep(&(n.dp), deltaTime)
 
 				_, _, x2, y2 := getDPCoords(n.dp, lengthScale)
 				n.prev = Point2f{X: x2, Y: y2}

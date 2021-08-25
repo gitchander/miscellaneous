@@ -8,15 +8,7 @@ const gravity = 9.81
 
 type DoublePendulum [2]Pendulum
 
-func (p *DoublePendulum) Clone() *DoublePendulum {
-	if p != nil {
-		a := *p
-		return &a
-	}
-	return nil
-}
-
-func getDPCoords(dp *DoublePendulum, scale float64) (x1, y1, x2, y2 float64) {
+func getDPCoords(dp DoublePendulum, scale float64) (x1, y1, x2, y2 float64) {
 
 	var (
 		p1 = &(dp[0])

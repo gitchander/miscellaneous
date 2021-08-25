@@ -82,7 +82,9 @@ func sqrtInt(s int) (int, bool) {
 		if (a * a) == s {
 			return a, true
 		}
+
 		b := s / a
+
 		if absInt(a-b) <= 1 {
 			return 0, false
 		}
@@ -103,7 +105,8 @@ func squareInt(a int) int {
 
 func testSqrtInt() {
 
-	fmt.Println(sqrtInt(squareInt(37)))
+	fmt.Println(sqrtInt(squareInt(678567954)))
+	return
 
 	for i := 0; i < 1_000_000; i++ {
 
@@ -121,6 +124,6 @@ func testSqrtInt() {
 }
 
 func main() {
-	testSqrt()
+	//testSqrt()
 	testSqrtInt()
 }

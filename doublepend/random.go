@@ -22,20 +22,41 @@ func randFloatInterval(r *rand.Rand, min, max float64) float64 {
 	return lerp(min, max, r.Float64())
 }
 
-func randPendulum(r *rand.Rand) Pendulum {
-	return Pendulum{
-		Mass:   randMass(r),
-		Length: randLength(r),
-		Theta:  randAngle(r),
-		//Velocity float64
+func randLengths(r *rand.Rand) (l1, l2 float64) {
+	const (
+		// totalLength = 1.0
+		// minLength   = 0.25
+
+		totalLength = 3.5
+		minLength   = 1.0
+	)
+	for {
+		l1 = r.Float64() * totalLength
+		l2 = totalLength - l1
+		if (l1 > minLength) && (l2 > minLength) {
+			return
+		}
 	}
 }
 
-func randDoublePendulum(r *rand.Rand) *DoublePendulum {
-	return &DoublePendulum{
-		randPendulum(r),
-		randPendulum(r),
-	}
+func randDoublePendulum(r *rand.Rand) DoublePendulum {
+
+	l1, l2 := randLengths(r)
+
+	var (
+		p1 = Pendulum{
+			Mass:   randMass(r),
+			Length: l1,
+			Theta:  randAngle(r),
+		}
+		p2 = Pendulum{
+			Mass:   randMass(r),
+			Length: l2,
+			Theta:  randAngle(r),
+		}
+	)
+
+	return DoublePendulum{p1, p2}
 }
 
 func randChangeDoublePendulum(r *rand.Rand, dp *DoublePendulum) {
@@ -56,7 +77,7 @@ func randChangeDoublePendulum(r *rand.Rand, dp *DoublePendulum) {
 }
 
 const (
-	massMin = 0.2
+	massMin = 0.1
 	massMax = 20.0
 )
 
@@ -64,14 +85,14 @@ func randMass(r *rand.Rand) float64 {
 	return randFloatInterval(r, massMin, massMax)
 }
 
-const (
-	lengthMin = 1.0
-	lengthMax = 2.0
-)
+// const (
+// 	lengthMin = 1.0
+// 	lengthMax = 2.0
+// )
 
-func randLength(r *rand.Rand) float64 {
-	return randFloatInterval(r, lengthMin, lengthMax)
-}
+// func randLength(r *rand.Rand) float64 {
+// 	return randFloatInterval(r, lengthMin, lengthMax)
+// }
 
 const (
 	angleMin = -math.Pi
@@ -83,14 +104,14 @@ func randAngle(r *rand.Rand) float64 {
 }
 
 func randSamplesV1(r *rand.Rand, n int) []*Sample {
-	dps := make([]*DoublePendulum, n)
+	dps := make([]DoublePendulum, n)
 	dp0 := randDoublePendulum(r)
 	for i := 0; i < n; i++ {
 		if i == 0 {
 			dps[i] = dp0
 		} else {
-			clone := dp0.Clone()
-			randChangeDoublePendulum(r, clone)
+			clone := dp0
+			randChangeDoublePendulum(r, &clone)
 			dps[i] = clone
 		}
 	}
@@ -108,11 +129,11 @@ func randSamplesV2(r *rand.Rand, n int) []*Sample {
 
 	dMass := (massMax - massMin) / 100 // 1%
 
-	dps := make([]*DoublePendulum, n)
+	dps := make([]DoublePendulum, n)
 	dp := randDoublePendulum(r)
 	mass := dp[1].Mass
 	for i := 0; i < n; i++ {
-		clone := dp.Clone()
+		clone := dp
 		p := &(clone[1])
 
 		p.Mass = mass + dMass*k
@@ -132,11 +153,11 @@ func randSamplesV3(r *rand.Rand, n int) []*Sample {
 	dMass := (massMax - massMin) / 100 // 1%
 	dMass *= 0.001
 
-	dps := make([]*DoublePendulum, n)
+	dps := make([]DoublePendulum, n)
 	dp := randDoublePendulum(r)
 	mass := dp[1].Mass
 	for i := 0; i < n; i++ {
-		clone := dp.Clone()
+		clone := dp
 		p := &(clone[1])
 
 		p.Mass = mass

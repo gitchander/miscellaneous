@@ -57,6 +57,12 @@ func (p *engineEventHandler) EventKey(keyCode uint16) {
 		{
 			p.engine.Pause()
 		}
+	case 39:
+		{
+			err := p.engine.SaveFileDP()
+			checkError(err)
+		}
 	default:
+		//fmt.Println("key code ", keyCode)
 	}
 }
