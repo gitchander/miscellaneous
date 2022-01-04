@@ -20,8 +20,8 @@ func main() {
 	g := image.NewGray(r)
 	draw.Draw(g, r, image.NewUniform(color.Gray{Y: 10}), image.ZP, draw.Src)
 
-	render1(g, size)
-	//render2(g, size)
+	//render1(g, size)
+	render2(g, size)
 	//render3(g, size)
 
 	var buf bytes.Buffer

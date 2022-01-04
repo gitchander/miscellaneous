@@ -9,15 +9,13 @@ import (
 const epsilon = 1e-13
 
 //------------------------------------------------------------------------------
-// sqrt - square root of s.
-func sqrt(s float64) float64 {
-	a := s
+// sqrt - square root of x.
+func sqrt(x float64) float64 {
+	a := x
 	for {
-		// a * b = s
-		// b = s / a
-		b := s / a
-
-		//fmt.Printf("(%.20f, %.20f)\n", a, b)
+		// a * b = x
+		// b = x / a
+		b := x / a
 
 		middle := (a + b) / 2
 		if math.Abs(a-b) < epsilon {
@@ -28,16 +26,19 @@ func sqrt(s float64) float64 {
 	return a
 }
 
-// cbrt - cube root of s.
-func cbrt(s float64) float64 {
-	a := s
-	for {
-		// a * b * b = s
-		// b * b = s / a
-		// b = sqrt(s / a)
-		b := sqrt(s / a)
+// Cube root
+// https://en.wikipedia.org/wiki/Cube_root
+// Newton's method
 
-		middle := (a + b + b) / 3
+// cbrt - cube root of x.
+func cbrt(x float64) float64 {
+	a := x
+	for {
+		// a * a * b = x
+		// b = x / (a * a)
+		b := x / (a * a)
+
+		middle := (a + a + b) / 3
 		if math.Abs(a-b) < epsilon {
 			return middle
 		}
@@ -52,11 +53,13 @@ func cubeFloat64(a float64) float64 {
 
 func testSqrt() {
 	// fmt.Println(sqrt(2))
-	fmt.Println(sqrt(2))
+	//fmt.Println(sqrt(7))
 	//fmt.Println(math.Sqrt(8))
 
 	// fmt.Println(math.Pow(5, 1.0/3.0))
-	fmt.Println(cbrt(cubeFloat64(3)))
+	//fmt.Println(cbrt(cubeFloat64(3)))
+	fmt.Println(cbrt(cubeFloat64(5)))
+	fmt.Println(cbrt(27))
 }
 
 //------------------------------------------------------------------------------
@@ -88,6 +91,7 @@ func sqrtInt(s int) (int, bool) {
 		if absInt(a-b) <= 1 {
 			return 0, false
 		}
+
 		a = (a + b) / 2 // middle
 	}
 }
@@ -106,6 +110,7 @@ func squareInt(a int) int {
 func testSqrtInt() {
 
 	fmt.Println(sqrtInt(squareInt(678567954)))
+	//fmt.Println(sqrtInt(8))
 	return
 
 	for i := 0; i < 1_000_000; i++ {
@@ -124,6 +129,6 @@ func testSqrtInt() {
 }
 
 func main() {
-	//testSqrt()
-	testSqrtInt()
+	testSqrt()
+	//testSqrtInt()
 }
