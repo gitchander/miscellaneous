@@ -24,7 +24,7 @@ func run() {
 }
 
 func waitSignalOS() os.Signal {
-	ls := make(chan os.Signal)
+	ls := make(chan os.Signal, 1)
 	signal.Notify(ls, syscall.SIGINT, syscall.SIGTERM)
 	l := <-ls
 	return l

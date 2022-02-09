@@ -18,7 +18,7 @@ func main() {
 		a = -2.0
 		b = +2.0
 
-		tolerance = 1E-15
+		tolerance = 1e-15
 
 		nmax = 60
 	)

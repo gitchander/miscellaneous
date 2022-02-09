@@ -1,0 +1,7 @@
+The Coding Train
+Coding Challenge #30: Phyllotaxis
+https://www.youtube.com/watch?v=KWoJgHFYWxY
+https://github.com/CodingTrain
+
+https://en.wikipedia.org/wiki/Phyllotaxis
+http://algorithmicbotany.org/papers/abop/abop-ch4.pdf

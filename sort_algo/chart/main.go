@@ -147,8 +147,7 @@ func calcAndPlot() {
 		},
 	}
 
-	p, err := plot.New()
-	checkError(err)
+	p := plot.New()
 
 	p.X.Label.Text = "N"
 	p.Y.Label.Text = "Compare count"

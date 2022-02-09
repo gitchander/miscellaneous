@@ -47,8 +47,6 @@ func generateBuffer(w io.Writer, sampler Sampler) error {
 			return err
 		}
 	}
-
-	return nil
 }
 
 func generateBufio(w io.Writer, sampler Sampler) error {
@@ -64,8 +62,6 @@ func generateBufio(w io.Writer, sampler Sampler) error {
 			return err
 		}
 	}
-
-	return nil
 }
 
 type Sampler interface {

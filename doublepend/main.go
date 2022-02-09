@@ -190,7 +190,9 @@ func makeDrawingArea(eh EventHandler) (*gtk.DrawingArea, error) {
 	da.Connect("key-press-event",
 		func(da *gtk.DrawingArea, event *gdk.Event) {
 
-			eventKey := &gdk.EventKey{event}
+			eventKey := &gdk.EventKey{
+				Event: event,
+			}
 			keyCode := eventKey.HardwareKeyCode()
 
 			eh.EventKey(keyCode)

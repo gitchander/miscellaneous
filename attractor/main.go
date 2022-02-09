@@ -20,8 +20,8 @@ func main() {
 	g := image.NewGray(r)
 	draw.Draw(g, r, image.NewUniform(color.Gray{Y: 10}), image.ZP, draw.Src)
 
-	//render1(g, size)
-	render2(g, size)
+	render1(g, size)
+	//render2(g, size)
 	//render3(g, size)
 
 	var buf bytes.Buffer
@@ -59,46 +59,32 @@ func makePoints(n int) []Point2f {
 	return ps
 }
 
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 func render1(g *image.Gray, size image.Point) {
 
 	var (
 		//		n = 2
 		//		t = 0.7
 
-		//		n = 3
-		//		t = 0.5
-
-		//		n = 4
-		//		t = 0.52
-
-		//		n = 5
-		//		t = 0.62
-
-		//		n = 6
-		//		t = 0.668
-
-		//		n = 7
-		//		t = 0.693
-
-		//		n = 12
-		//		t = 0.79
-
 		n = 3
 		t = 0.5
+
+		// n = 4
+		// t = 0.52
+
+		// n = 5
+		// t = 0.62
+
+		// n = 6
+		// t = 0.668
+
+		// n = 7
+		// t = 0.693
+
+		// n = 12
+		// t = 0.79
+
+		// n = 3
+		// t = 0.5
 	)
 
 	var nr Nexter = PtNext{

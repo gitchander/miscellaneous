@@ -23,7 +23,6 @@ func sqrt(x float64) float64 {
 		}
 		a = middle
 	}
-	return a
 }
 
 // Cube root
@@ -44,7 +43,6 @@ func cbrt(x float64) float64 {
 		}
 		a = middle
 	}
-	return a
 }
 
 func cubeFloat64(a float64) float64 {
@@ -109,9 +107,9 @@ func squareInt(a int) int {
 
 func testSqrtInt() {
 
-	fmt.Println(sqrtInt(squareInt(678567954)))
+	//fmt.Println(sqrtInt(squareInt(678567954)))
 	//fmt.Println(sqrtInt(8))
-	return
+	//return
 
 	for i := 0; i < 1_000_000; i++ {
 

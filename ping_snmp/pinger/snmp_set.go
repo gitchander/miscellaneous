@@ -17,7 +17,7 @@ func setSnmp(config Config, state bool) error {
 		Community: "public",
 		Version:   g.Version2c,
 		Timeout:   time.Duration(2) * time.Second,
-		Logger:    log.New(os.Stdout, "", 0),
+		Logger:    g.NewLogger(log.New(os.Stdout, "", 0)),
 	}
 	err := params.Connect()
 	if err != nil {
@@ -39,7 +39,7 @@ func setSnmp(config Config, state bool) error {
 
 	result, err := params.Set(pdus)
 	if err != nil {
-		return fmt.Errorf("snmp Set() err: ", err)
+		return fmt.Errorf("snmp Set() err: %s", err)
 	}
 	fmt.Println("snmp Set() result:", result)
 	fmt.Println("snmp Set() ok")

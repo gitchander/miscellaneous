@@ -26,6 +26,4 @@ func WriteSamples(w io.Writer, sampler Sampler) error {
 			return err
 		}
 	}
-
-	return nil
 }
