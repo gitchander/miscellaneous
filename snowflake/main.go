@@ -92,13 +92,13 @@ type Snowflake struct {
 	Wf float64
 }
 
-func saveImagePNG(im image.Image, filename string) error {
-	var buf bytes.Buffer
-	err := png.Encode(&buf, im)
+func saveImagePNG(m image.Image, filename string) error {
+	var b bytes.Buffer
+	err := png.Encode(&b, m)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, buf.Bytes(), 0666)
+	return ioutil.WriteFile(filename, b.Bytes(), 0666)
 }
 
 func renderBase(p Params, set func(x, y float64)) {
