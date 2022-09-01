@@ -2,3 +2,5 @@ https://en.wikipedia.org/wiki/Double_pendulum
 https://www.youtube.com/watch?v=uWzPe_S-RVE
 https://www.myphysicslab.com/pendulum/double-pendulum-en.html
 http://bestofallpossibleurls.com/double-pendulum.html
+
+https://github.com/myphysicslab/myphysicslab/blob/master/src/sims/pendulum/DoublePendulumSim.js

@@ -43,42 +43,42 @@ func nextStep(dp *DoublePendulum, deltaTimeSec float64) {
 		p2 = &(dp[1])
 	)
 
-	var (
-		m1 = p1.Mass
-		m2 = p2.Mass
+	p := &doublePendulum{
+		m1: p1.Mass,
+		m2: p2.Mass,
 
-		r1 = p1.Length
-		r2 = p2.Length
+		r1: p1.Length,
+		r2: p2.Length,
 
-		a1 = p1.Theta
-		a2 = p2.Theta
+		a1: p1.Theta,
+		a2: p2.Theta,
 
-		a1_v = p1.Velocity
-		a2_v = p2.Velocity
+		v1: p1.Velocity,
+		v2: p2.Velocity,
+	}
 
-		dt = deltaTimeSec
-	)
+	var dt = deltaTimeSec
 
 	//---------------------------------------------------
 
-	a1_a, a2_a := calc(m1, m2, r1, r2, a1, a2, a1_v, a2_v)
+	a1_a, a2_a := calculate(p)
 
-	a1_v += a1_a * dt
-	a2_v += a2_a * dt
+	p.v1 += a1_a * dt
+	p.v2 += a2_a * dt
 
-	a1 += a1_v * dt
-	a2 += a2_v * dt
+	p.a1 += p.v1 * dt
+	p.a2 += p.v2 * dt
 
 	if false {
 		const coef = 0.999
-		a1_v *= coef
-		a2_v *= coef
+		p.v1 *= coef
+		p.v2 *= coef
 	}
 
 	//---------------------------------------------------
 
-	p1.Theta = a1
-	p2.Theta = a2
+	p1.Theta = p.a1
+	p2.Theta = p.a2
 
 	if true {
 		p1.Theta = angleNormalize(p1.Theta)
@@ -87,13 +87,20 @@ func nextStep(dp *DoublePendulum, deltaTimeSec float64) {
 
 	//---------------------------------------------------
 
-	p1.Velocity = a1_v
-	p2.Velocity = a2_v
+	p1.Velocity = p.v1
+	p2.Velocity = p.v2
 
 	if true {
 		p1.Velocity = clampVelocity(p1.Velocity)
 		p2.Velocity = clampVelocity(p2.Velocity)
 	}
+}
+
+type doublePendulum struct {
+	m1, m2 float64 // Mass
+	r1, r2 float64 // Length
+	a1, a2 float64 // Theta
+	v1, v2 float64 // Velocity
 }
 
 // type Thetas struct {
@@ -102,28 +109,26 @@ func nextStep(dp *DoublePendulum, deltaTimeSec float64) {
 // 	dd_theta float64 // theta"
 // }
 
-// https://github.com/myphysicslab/myphysicslab/blob/master/src/sims/pendulum/DoublePendulumSim.js
-
 // accelerations: a1_a, a2_a
-func calc(m1, m2 float64, r1, r2 float64, a1, a2 float64, a1_v, a2_v float64) (a1_a, a2_a float64) {
+func calculate(p *doublePendulum) (a1_a, a2_a float64) {
 
 	const g = gravity
 
-	den := (2*m1 + m2 - m2*math.Cos(2*(a1-a2)))
+	den := (2*p.m1 + p.m2 - (p.m2 * math.Cos(2*(p.a1-p.a2))))
 
-	tmp1 := -g * (2*m1 + m2) * math.Sin(a1)
-	tmp2 := -g * m2 * math.Sin(a1-2*a2)
-	tmp3 := -2 * math.Sin(a1-a2) * m2
-	tmp4 := a2_v*a2_v*r2 + a1_v*a1_v*r1*math.Cos(a1-a2)
+	tmp1 := -g * ((2 * p.m1) + p.m2) * math.Sin(p.a1)
+	tmp2 := -g * p.m2 * math.Sin(p.a1-2*p.a2)
+	tmp3 := -2 * math.Sin(p.a1-p.a2) * p.m2
+	tmp4 := p.v2*p.v2*p.r2 + (p.v1*p.v1)*(p.r1)*math.Cos(p.a1-p.a2)
 
-	a1_a = (tmp1 + tmp2 + tmp3*tmp4) / (r1 * den)
+	a1_a = (tmp1 + tmp2 + tmp3*tmp4) / (p.r1 * den)
 
-	tmp1 = 2 * math.Sin(a1-a2)
-	tmp2 = a1_v * a1_v * r1 * (m1 + m2)
-	tmp3 = g * (m1 + m2) * math.Cos(a1)
-	tmp4 = a2_v * a2_v * r2 * m2 * math.Cos(a1-a2)
+	tmp1 = 2 * math.Sin(p.a1-p.a2)
+	tmp2 = p.v1 * p.v1 * p.r1 * (p.m1 + p.m2)
+	tmp3 = g * (p.m1 + p.m2) * math.Cos(p.a1)
+	tmp4 = p.v2 * p.v2 * p.r2 * p.m2 * math.Cos(p.a1-p.a2)
 
-	a2_a = (tmp1 * (tmp2 + tmp3 + tmp4)) / (r2 * den)
+	a2_a = (tmp1 * (tmp2 + tmp3 + tmp4)) / (p.r2 * den)
 
 	return
 }

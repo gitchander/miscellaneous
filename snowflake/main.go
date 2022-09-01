@@ -11,7 +11,7 @@ import (
 	"math"
 )
 
-const Tau = 2 * math.Pi
+const tau = 2 * math.Pi
 
 func main() {
 
@@ -44,8 +44,8 @@ func main() {
 
 	p.Size = imageSize
 
-	angleMin *= Tau
-	angleMax *= Tau
+	angleMin *= tau
+	angleMax *= tau
 
 	p.Angle = Range{
 		Min:  angleMin,
