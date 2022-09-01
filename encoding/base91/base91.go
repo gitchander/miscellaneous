@@ -1,4 +1,4 @@
-package main
+package base91
 
 import (
 	"fmt"
@@ -6,10 +6,8 @@ import (
 
 // http://base91.sourceforge.net/#a1
 // https://stackoverflow.com/questions/46978133/base91-how-is-it-calculated
-
 // const tableBase91Str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\""
 
-//------------------------------------------------------------------------------
 const bitsPerByte = 8
 
 const (
@@ -32,35 +30,33 @@ var (
 	decodeTable = makeDecodeTable()
 )
 
-func makeDecodeTable() []int {
-	dt := make([]int, 256)
+func makeDecodeTable() []byte {
+	dt := make([]byte, 256)
 	for i := range dt {
-		dt[i] = -1
+		dt[i] = 0xFF
 	}
 	for i, b := range alphabet {
-		dt[b] = i
+		dt[b] = byte(i)
 	}
 	return dt
 }
 
-func quoRem(a, b int) (quo, rem int) {
-	quo = a / b
-	rem = a % b
-	return
-}
+func EncodedLenMax(x int) int { return ceilDiv(x*16, 13) } // + 23%
 
-func Encode(d []byte) []byte {
+func DecodedLenMax(x int) int { return x }
 
-	var res []byte
+func Encode(dst, src []byte) int {
+
+	j := 0
 
 	var (
 		av uint32 // bits accumulator
 		an int    // bits length
 	)
 
-	for _, di := range d {
+	for _, b := range src {
 
-		av |= uint32(di) << an
+		av |= uint32(b) << an
 		an += bitsPerByte
 
 		if an < 14 {
@@ -80,24 +76,30 @@ func Encode(d []byte) []byte {
 
 		v1, v0 := quoRem(v, 91)
 
-		res = append(res, encodeTable[v0], encodeTable[v1])
+		dst[j] = encodeTable[v0]
+		j++
+
+		dst[j] = encodeTable[v1]
+		j++
 	}
 
 	if an > 0 {
 		v := int(av)
 		v1, v0 := quoRem(v, 91)
-		res = append(res, encodeTable[v0])
+		dst[j] = encodeTable[v0]
+		j++
 		if (an > 7) || (v > 90) {
-			res = append(res, encodeTable[v1])
+			dst[j] = encodeTable[v1]
+			j++
 		}
 	}
 
-	return res
+	return j
 }
 
-func Decode(d []byte) []byte {
+func Decode(dst, src []byte) (int, error) {
 
-	var res []byte
+	j := 0
 
 	var (
 		av uint32 // bits accumulator
@@ -106,19 +108,19 @@ func Decode(d []byte) []byte {
 
 	v := -1
 
-	for _, di := range d {
+	for _, b := range src {
 
-		dv := decodeTable[di]
-		if dv == -1 { // skip invalid data
-			continue
+		dv := decodeTable[b]
+		if dv == 0xFF {
+			return j, fmt.Errorf("base91: invalid byte: %#U", rune(b))
 		}
 
 		if v == -1 {
-			v = dv
+			v = int(dv)
 			continue
 		}
 
-		v += dv * 91
+		v += int(dv) * 91
 
 		var vn int
 		if (v & mask13bit) > 88 {
@@ -133,7 +135,9 @@ func Decode(d []byte) []byte {
 		v = -1
 
 		for an >= bitsPerByte {
-			res = append(res, byte(av))
+			dst[j] = byte(av)
+			j++
+
 			av >>= bitsPerByte
 			an -= bitsPerByte
 		}
@@ -141,33 +145,21 @@ func Decode(d []byte) []byte {
 
 	if v != -1 {
 		av |= uint32(v) << an
-		res = append(res, byte(av))
+		dst[j] = byte(av)
+		j++
 	}
 
-	return res
+	return j, nil
 }
 
-//------------------------------------------------------------------------------
-func main() {
-	//text := repeatByte(0x00, 5)
-	//text := repeatByte(0xff, 3)
-	//text := []byte("test")
-	text := []byte("Hello World!")
-
-	e := Encode(text)
-	d := Decode(e)
-
-	fmt.Printf("enc: %s\n", e) // "fPNKd"
-	fmt.Printf("dec: %s\n", d)
-
-	fmt.Printf("text: [% x]\n", text)
-	fmt.Printf("dec:  [% x]\n", d)
+func EncodeToString(src []byte) string {
+	dst := make([]byte, EncodedLenMax(len(src)))
+	n := Encode(dst, src)
+	return string(dst[:n])
 }
 
-func repeatByte(b byte, n int) []byte {
-	bs := make([]byte, n)
-	for i := range bs {
-		bs[i] = b
-	}
-	return bs
+func DecodeString(s string) ([]byte, error) {
+	src := []byte(s)
+	n, err := Decode(src, src)
+	return src[:n], err
 }
