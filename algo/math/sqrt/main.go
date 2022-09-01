@@ -67,11 +67,11 @@ func sqrtIntMath(s int) (int, bool) {
 	if s < 0 {
 		return 0, false
 	}
-	a := int(math.Round(math.Sqrt(float64(s))))
+	a := int(math.Floor(math.Sqrt(float64(s))))
 	if (a * a) == s {
 		return a, true
 	}
-	return 0, false
+	return a, false
 }
 
 func sqrtInt(s int) (int, bool) {
@@ -86,8 +86,34 @@ func sqrtInt(s int) (int, bool) {
 
 		b := s / a
 
-		if absInt(a-b) <= 1 {
-			return 0, false
+		if a > b {
+			a, b = b, a
+		}
+		if (b - a) < 2 {
+			return a, false
+		}
+
+		a = (a + b) / 2 // middle
+	}
+}
+
+func sqrtInt64(s int64) (int64, bool) {
+	if s < 0 {
+		return 0, false
+	}
+	a := s
+	for {
+		if (a * a) == s {
+			return a, true
+		}
+
+		b := s / a
+
+		if a > b {
+			a, b = b, a
+		}
+		if (b - a) < 2 {
+			return a, false
 		}
 
 		a = (a + b) / 2 // middle
@@ -128,5 +154,5 @@ func testSqrtInt() {
 
 func main() {
 	testSqrt()
-	//testSqrtInt()
+	testSqrtInt()
 }

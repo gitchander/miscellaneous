@@ -1,0 +1,11 @@
+Indicating end of Standard Input
+
+[Ctrl + D]
+[Ctrl + Shift + D]
+
+//------------------------------------------------------------------------------
+$ cat ../samples/sample1.json | ./result
+$ cat ../samples/sample2.json | ./result
+
+$ ./result ../samples/sample1.json
+$ ./result ../samples/sample1.json ../samples/sample2.json

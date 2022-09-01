@@ -1,0 +1,1 @@
+$ ./search -text "Hello, World!" -sample_size 4 -origin_size 4

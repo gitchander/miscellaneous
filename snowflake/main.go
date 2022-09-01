@@ -217,5 +217,5 @@ func renderSmooth(g *image.Gray, p Params) {
 }
 
 func round(x float64) int {
-	return int(math.Floor(x + 0.5))
+	return int(math.Round(x))
 }
