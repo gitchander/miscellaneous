@@ -20,23 +20,24 @@ require (
 require (
 	git.sr.ht/~sbinet/gg v0.3.1 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
-	github.com/ebitengine/purego v0.0.0-20220816145426-8dbe340b03f1 // indirect
+	github.com/ebitengine/purego v0.0.0-20220829192423-0acfce66fb4a // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/go-fonts/liberation v0.2.0 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220806181222-55e207c401ad // indirect
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
 	github.com/go-pdf/fpdf v0.6.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/google/uuid v1.2.0 // indirect
-	github.com/hajimehoshi/file2byteslice v0.0.0-20210813153925-5340248a8f41 // indirect
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/hajimehoshi/file2byteslice v1.0.0 // indirect
 	github.com/jezek/xgb v1.0.1 // indirect
-	github.com/lucasb-eyer/go-colorful v1.0.3 // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
+	github.com/rivo/uniseg v0.3.4 // indirect
 	golang.org/x/exp v0.0.0-20191002040644-a1355ae1e2c3 // indirect
+	golang.org/x/exp/shiny v0.0.0-20220827204233-334a2380cb91 // indirect
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539 // indirect
 	golang.org/x/mobile v0.0.0-20220722155234-aaac322e2105 // indirect
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
-	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
+	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde // indirect
+	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
