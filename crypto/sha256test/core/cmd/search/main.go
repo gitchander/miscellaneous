@@ -17,7 +17,7 @@ import (
 func main() {
 	var c Config
 	flag.StringVar(&(c.Text), "text", "Hello, World!", "source text")
-	flag.IntVar(&(c.SampleSize), "sample_size", 3, "sample size")
+	flag.IntVar(&(c.SampleSize), "sample_size", 4, "sample size")
 	flag.IntVar(&(c.OriginSize), "origin_size", 8, "origin size")
 	flag.Parse()
 	checkError(run(c))
