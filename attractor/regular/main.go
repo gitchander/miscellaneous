@@ -2,11 +2,10 @@ package main
 
 import (
 	"log"
-	"math"
 
 	"github.com/gitchander/miscellaneous/attractor"
 	"github.com/gitchander/miscellaneous/attractor/utils"
-	. "github.com/gitchander/miscellaneous/attractor/utils/point2f"
+	"github.com/gitchander/miscellaneous/attractor/utils/random"
 )
 
 func main() {
@@ -47,9 +46,12 @@ func run() error {
 		// t = 0.79
 	)
 
-	ps := makePoints(n)
-	nr := attractor.NewPtNext(ps, t)
-	nr.Randomize(Pt2f(-1, -1), Pt2f(1, 1))
+	r := random.NewRandNow()
+
+	ps := attractor.MakeRegularPoints(n)
+	fr := attractor.NewPsFeeder(ps, t)
+	p := attractor.RandPointInRadius(r, 1)
+	nr := attractor.MakeNexter(fr, p)
 
 	//--------------------------------------------------------------------------
 	rc := attractor.RenderConfig{
@@ -72,18 +74,4 @@ func run() error {
 	}
 
 	return utils.SaveImagePNG("attractor.png", m)
-}
-
-func makePoints(n int) []Point2f {
-	ps := make([]Point2f, n)
-	var (
-		radius = 1.0
-		u0     = -math.Pi / 2
-		du     = 2 * math.Pi / float64(n)
-	)
-	for i := range ps {
-		u := u0 + float64(i)*du
-		ps[i] = PolarToPoint2f(u, radius)
-	}
-	return ps
 }

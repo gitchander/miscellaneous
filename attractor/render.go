@@ -25,10 +25,6 @@ type SmoothConfig struct {
 	Factor  float64 `json:"factor"`
 }
 
-type Nexter interface {
-	Next() Point2f
-}
-
 type params struct {
 	imageSize    image.Point
 	totalPoints  int

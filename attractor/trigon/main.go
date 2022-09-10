@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gitchander/miscellaneous/attractor"
 	"github.com/gitchander/miscellaneous/attractor/utils"
 	opt "github.com/gitchander/miscellaneous/attractor/utils/optional"
+	"github.com/gitchander/miscellaneous/attractor/utils/random"
 )
 
 func main() {
@@ -22,11 +24,27 @@ func run() error {
 
 	optSeed := opt.OptInt64{
 		Present: false,
-		Value:   3109666676878827058,
+		Value:   6579706586152203246,
+		// 6579706586152203246
 	}
 
-	t := randTrigOptSeed(optSeed)
-	nr := newAttrTrig(t, randFirstPoint())
+	var seed int64
+	if optSeed.Present {
+		seed = optSeed.Value
+	} else {
+		seed = random.NewRandNow().Int63()
+	}
+	fmt.Println("seed", seed)
+
+	r := random.NewRandSeed(seed)
+
+	p := attractor.RandPointInRadius(r, 2)
+
+	rps := attractor.RegularPoints(2, 2, -0.25)
+	fr2 := attractor.NewPsFeeder(rps, 0.5)
+
+	mf := attractor.MultiFeeder(randTrig(r), fr2)
+	nr := attractor.MakeNexter(mf, p)
 
 	//--------------------------------------------------------------------------
 	rc := attractor.RenderConfig{

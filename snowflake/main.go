@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -14,6 +15,16 @@ import (
 const tau = 2 * math.Pi
 
 func main() {
+	checkError(run())
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 
 	var p Params
 
@@ -40,7 +51,9 @@ func main() {
 	flag.Parse()
 
 	imageSize, err := parseSize(strSize)
-	checkError(err)
+	if err != nil {
+		return err
+	}
 
 	p.Size = imageSize
 
@@ -61,14 +74,7 @@ func main() {
 		renderSmooth(g, p)
 	}
 
-	err = saveImagePNG(g, filename)
-	checkError(err)
-}
-
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
+	return saveImagePNG(g, filename)
 }
 
 type Params struct {
@@ -122,10 +128,14 @@ func renderBase(p Params, set func(x, y float64)) {
 		dw *= p.SF.Wf
 	}
 
+	phase := 0.0
+	tauPhase := tau * phase
+	fmt.Println(tauPhase)
+
 	angle := p.Angle.Min
 	for angle < p.Angle.Max {
 
-		x, y := 0.0, 0.0
+		var x, y float64 = 0, 0
 		for i := 0; i < n; i++ {
 			sin, cos := math.Sincos(ws[i] * angle)
 			x += xs[i] * cos

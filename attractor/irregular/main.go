@@ -26,10 +26,9 @@ func run() error {
 
 	r := random.NewRandNow()
 
-	seed = int64(r.Intn(10000))
+	seed = r.Int63()
 	fmt.Println("seed:", seed)
 	r.Seed(seed)
-	//r.Seed(1286)
 
 	ps := make([]Point2f, 5)
 	for i := range ps {
@@ -41,8 +40,9 @@ func run() error {
 
 	t := 0.5
 
-	nr := attractor.NewPtNext(ps, t)
-	nr.Randomize(Pt2f(-1, -1), Pt2f(1, 1))
+	fr := attractor.NewPsFeeder(ps, t)
+	p := attractor.RandPointInRadius(r, 1)
+	nr := attractor.MakeNexter(fr, p)
 
 	//--------------------------------------------------------------------------
 	rc := attractor.RenderConfig{

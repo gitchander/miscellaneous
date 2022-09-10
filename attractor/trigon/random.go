@@ -6,7 +6,6 @@ import (
 	"math/rand"
 
 	opt "github.com/gitchander/miscellaneous/attractor/utils/optional"
-	. "github.com/gitchander/miscellaneous/attractor/utils/point2f"
 	"github.com/gitchander/miscellaneous/attractor/utils/random"
 )
 
@@ -42,17 +41,4 @@ func randTrigOptSeed(optSeed opt.OptInt64) Trig {
 		fmt.Println("random seed:", seed)
 	}
 	return randTrigSeed(seed)
-}
-
-func randFirstPoint() Point2f {
-	const d = 2
-	var (
-		min = Pt2f(-d, -d)
-		max = Pt2f(d, d)
-	)
-	r := random.NewRandNow()
-	return Point2f{
-		X: random.RandInterval(r, min.X, max.X),
-		Y: random.RandInterval(r, min.Y, max.Y),
-	}
 }
