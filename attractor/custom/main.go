@@ -6,15 +6,12 @@ import (
 
 	attr "github.com/gitchander/miscellaneous/attractor"
 	"github.com/gitchander/miscellaneous/attractor/utils"
-	. "github.com/gitchander/miscellaneous/attractor/utils/point2f"
 	"github.com/gitchander/miscellaneous/attractor/utils/random"
 )
 
 func main() {
 	var c Config
-	flag.StringVar(&(c.Seed), "seed", "", "seed value")
-	flag.IntVar(&(c.IrregularAttractor.Points), "points", 3, "number of points")
-	flag.Float64Var(&(c.IrregularAttractor.Koef), "koef", 0.5, "attractor koef")
+	flag.StringVar(&(c.Seed), "seed", "", "random seed")
 	flag.StringVar(&(c.RenderConfig), "render", attr.DefaultRenderConfigFilename, "render config filename")
 	flag.Parse()
 
@@ -28,14 +25,8 @@ func checkError(err error) {
 }
 
 type Config struct {
-	Seed               string
-	IrregularAttractor IrregularAttractor
-	RenderConfig       string
-}
-
-type IrregularAttractor struct {
-	Points int
-	Koef   float64
+	Seed         string
+	RenderConfig string
 }
 
 func run(c Config) error {
@@ -54,26 +45,18 @@ func run(c Config) error {
 		}
 	}
 
-	var (
-		n = c.IrregularAttractor.Points
-		t = c.IrregularAttractor.Koef
-	)
-
 	r := random.NewRandSeed(seed)
 
-	ps := make([]Point2f, n)
-	for i := range ps {
-		ps[i] = Point2f{
-			X: random.RandInterval(r, -1, 1),
-			Y: random.RandInterval(r, -1, 1),
-		}
-	}
+	// rps := attr.RegularPoints(2, 2, -0.25)
+	// fr2 := attr.NewPsFeeder(rps, 0.5)
 
-	fr := attr.NewPsFeeder(ps, t)
+	mf := attr.MultiFeeder(randAttractor3(r))
+
 	p := attr.RandPointInRadius(r, 1)
-	nr := attr.MakeNexter(fr, p)
+	nr := attr.MakeNexter(mf, p)
 
 	//--------------------------------------------------------------------------
+
 	m, err := attr.Render(rc, nr)
 	if err != nil {
 		return err

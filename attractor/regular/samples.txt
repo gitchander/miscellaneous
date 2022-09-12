@@ -1,0 +1,14 @@
+Cantor set:
+https://en.wikipedia.org/wiki/Cantor_set
+$ ./regular -points 2 -koef 0.66666666
+
+Sierpiński triangle:
+https://en.wikipedia.org/wiki/Sierpi%C5%84ski_triangle
+$ ./regular -points 3 -koef 0.5
+
+$ ./regular -points 6 -koef 0.5
+$ ./regular -points 4 -koef 0.52
+$ ./regular -points 5 -koef 0.62
+$ ./regular -points 6 -koef 0.668
+$ ./regular -points 7 -koef 0.693
+$ ./regular -points 12 -koef 0.79

@@ -4,19 +4,21 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"math"
 
 	"github.com/gitchander/miscellaneous/attractor/utils"
 	. "github.com/gitchander/miscellaneous/attractor/utils/point2f"
 )
 
 type RenderConfig struct {
-	ImageSize    string       `json:"image_size"`
-	TotalPoints  int          `json:"total_points"`
-	RadiusFactor float64      `json:"radius_factor"`
-	FillBG       bool         `json:"fill_bg"`
-	ColorBG      string       `json:"color_bg"`
-	ColorFG      string       `json:"color_fg"`
-	Smooth       SmoothConfig `json:"smooth"`
+	ImageFilename string       `json:"image_filename"`
+	ImageSize     string       `json:"image_size"`
+	TotalPoints   int          `json:"total_points"`
+	RadiusFactor  float64      `json:"radius_factor"`
+	FillBG        bool         `json:"fill_bg"`
+	ColorBG       string       `json:"color_bg"`
+	ColorFG       string       `json:"color_fg"`
+	Smooth        SmoothConfig `json:"smooth"`
 }
 
 type SmoothConfig struct {
@@ -82,7 +84,8 @@ func Render(rc RenderConfig, nr Nexter) (image.Image, error) {
 	if !(pas.smooth.Present) {
 		renderBrute(pas, nr, m)
 	} else {
-		renderSmooth(pas, nr, m)
+		//renderSmooth1(pas, nr, m)
+		renderSmooth2(pas, nr, m)
 	}
 
 	return m, nil
@@ -103,7 +106,7 @@ func renderBrute(pas *params, nr Nexter, g draw.Image) {
 	}
 }
 
-func renderSmooth(pas *params, nr Nexter, g draw.Image) {
+func renderSmooth1(pas *params, nr Nexter, g draw.Image) {
 
 	var (
 		m            = pas.smooth.Range
@@ -154,4 +157,89 @@ func renderSmooth(pas *params, nr Nexter, g draw.Image) {
 			g.Set(x, y, c)
 		}
 	}
+}
+
+func renderSmooth2(pas *params, nr Nexter, g draw.Image) {
+
+	var smoothFactor = pas.smooth.Factor
+
+	size := pas.imageSize
+
+	//r:= image.Rectangle{Max:pas.imageSize }
+
+	ssv := make([][]float64, size.X)
+	for i := range ssv {
+		ssv[i] = make([]float64, size.Y)
+	}
+
+	radius := pas.radiusFactor * float64(minInt(size.X, size.Y)) / 2
+	center := Point2f{
+		X: float64(size.X),
+		Y: float64(size.Y),
+	}.DivScalar(2)
+
+	cellAdd := func(x, y int, v float64) {
+
+		if not((0 <= x) && (x < size.X)) {
+			return
+		}
+		if not((0 <= y) && (y < size.Y)) {
+			return
+		}
+
+		ssv[x][y] += v
+	}
+
+	for i := 0; i < pas.totalPoints; i++ {
+
+		pn := nr.Next()
+		p := center.Add(pn.MulScalar(radius))
+
+		var (
+			x0, x1 = floorCeil(p.X)
+			y0, y1 = floorCeil(p.Y)
+		)
+
+		var (
+			t00 = (1 - (p.X - x0)) * (1 - (p.Y - y0))
+			t01 = (1 - (p.X - x0)) * (1 - (y1 - p.Y))
+			t10 = (1 - (x1 - p.X)) * (1 - (p.Y - y0))
+			t11 = (1 - (x1 - p.X)) * (1 - (y1 - p.Y))
+		)
+
+		cellAdd(int(x0), int(y0), t00)
+		cellAdd(int(x0), int(y1), t01)
+		cellAdd(int(x1), int(y0), t10)
+		cellAdd(int(x1), int(y1), t11)
+	}
+
+	var maxVal float64
+	for _, sv := range ssv {
+		for _, v := range sv {
+			maxVal = maxFloat64(maxVal, v)
+		}
+	}
+
+	for x := 0; x < size.X; x++ {
+		for y := 0; y < size.Y; y++ {
+
+			v := ssv[x][y] / maxVal
+			t := applyFactor(v, smoothFactor)
+
+			c0 := g.At(x, y)
+			c := utils.LerpColor(c0, pas.colorFG, t)
+			g.Set(x, y, c)
+		}
+	}
+}
+
+func not(b bool) bool {
+	return !b
+}
+
+func floorCeil(x float64) (floor float64, ceil float64) {
+	floor = math.Floor(x)
+	//ceil = math.Ceil(x)
+	ceil = floor + 1
+	return
 }

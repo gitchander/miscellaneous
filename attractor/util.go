@@ -18,6 +18,13 @@ func maxInt(a, b int) int {
 	return b
 }
 
+func maxFloat64(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 func applyFactor(x, factor float64) float64 {
 	if x < 0 {
 		return 0

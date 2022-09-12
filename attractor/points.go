@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/gitchander/miscellaneous/attractor/utils"
 	. "github.com/gitchander/miscellaneous/attractor/utils/point2f"
 )
 
@@ -26,15 +27,26 @@ func RegularPoints(n int, radius float64, phase float64) []Point2f {
 }
 
 func RandPointInRadius(r *rand.Rand, radius float64) Point2f {
-	rr := radius * radius
-	if rr == 0 {
+
+	switch {
+	case math.IsInf(radius, 0):
+		return Point2f{}
+	case math.IsNaN(radius):
 		return Point2f{}
 	}
+
+	radius = math.Abs(radius)
+
+	if radius == 0 {
+		return Point2f{}
+	}
+
+	rr := radius * radius
 	for {
 		p := Point2f{
-			X: (1 - r.Float64()*2) * radius,
-			Y: (1 - r.Float64()*2) * radius,
-		}
+			X: utils.Lerp(-1, +1, r.Float64()),
+			Y: utils.Lerp(-1, +1, r.Float64()),
+		}.MulScalar(radius)
 		if ((p.X * p.X) + (p.Y * p.Y)) < rr {
 			return p
 		}

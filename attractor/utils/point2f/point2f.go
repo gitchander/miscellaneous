@@ -2,7 +2,6 @@ package point2f
 
 import (
 	"image"
-	"math"
 
 	"github.com/gitchander/miscellaneous/attractor/utils"
 )
@@ -11,6 +10,11 @@ type Point2f struct {
 	X, Y float64
 }
 
+func _() {
+	image.Pt(0, 0)
+}
+
+// Pt2f is shorthand for Point2f{X, Y}.
 func Pt2f(x, y float64) Point2f {
 	return Point2f{
 		X: x,
@@ -55,21 +59,5 @@ func (p Point2f) DivScalar(scalar float64) Point2f {
 	return Point2f{
 		X: p.X / scalar,
 		Y: p.Y / scalar,
-	}
-}
-
-//------------------------------------------------------------------------------
-func PolarToPoint2f(angle, radius float64) Point2f {
-	sin, cos := math.Sincos(angle)
-	return Point2f{
-		X: cos,
-		Y: sin,
-	}.MulScalar(radius)
-}
-
-func PointLerp(a, b Point2f, t float64) Point2f {
-	return Point2f{
-		X: utils.Lerp(a.X, b.X, t),
-		Y: utils.Lerp(a.Y, b.Y, t),
 	}
 }

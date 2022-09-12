@@ -25,5 +25,5 @@ func NewPsFeeder(ps []Point2f, t float64) *PsFeeder {
 
 func (p *PsFeeder) Feed(a Point2f) Point2f {
 	i := p.r.Intn(len(p.ps))
-	return PointLerp(a, p.ps[i], p.t)
+	return LerpPoint2f(a, p.ps[i], p.t)
 }

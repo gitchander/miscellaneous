@@ -1,0 +1,146 @@
+//---------------------------------------------------------------------------
+struct SColor {
+        int r, g, b;
+
+        void Init(int rr, int gg, int bb) {
+                r= rr;
+                g= gg;
+                b= bb;
+        }
+};
+//---------------------------------------------------------------------------
+typedef DinArray<TPoint> APoint;
+//---------------------------------------------------------------------------
+#define M_2PI 6.283185307179586476925286766559
+
+struct TGarmonica {
+
+        double Amplitude;
+        double Frequency;
+        double Phase;
+
+        TGarmonica(): Amplitude(1.0), Frequency(1.0), Phase(0.0) {}
+
+        TGarmonica(const double a, const double f, const double p):
+                Amplitude(a), Frequency(f), Phase(p)
+        {
+
+        }
+
+        double Value(const double t) const
+        {
+                return Amplitude * sin(M_2PI * Frequency * t + Phase);
+        }
+};
+//---------------------------------------------------------------------------
+struct TAttractorParams {
+
+        TGarmonica G[4];
+};
+//---------------------------------------------------------------------------
+#define round(x) floor((x) + 0.5)
+
+
+
+
+
+void MyAttractor1(const TAttractorParams &P, double &x, double &y)
+{
+        double _x, _y;
+
+        /*
+        if (Rnd.Next() > 0.5)
+        {
+                _x= sin(P.A * y) + cos(P.B* x + P.D*y);
+                _y= sin(P.C * x) + cos(P.D * y);
+        }
+        else
+        {
+                _x= -y;
+                _y= sin(P.B * x);
+        }
+        */
+
+        x= _x;
+        y= _y;
+}
+//---------------------------------------------------------------------------
+#if 1
+void FAttr(const TAttractorParams &P, double &x, double &y)
+{
+        double _x, _y;
+
+        _x= P.G[0].Value(y) + P.G[1].Value(x);
+        _y= P.G[2].Value(x) + P.G[3].Value(y);
+
+        x= _x;
+        y= _y;
+}
+#else
+void FAttr(const TAttractorParams &P, double &x, double &y)
+{
+        double a= P.G[0].Amplitude;
+        double b= P.G[1].Amplitude;
+        double c= P.G[2].Amplitude;
+        double d= P.G[3].Amplitude;
+
+        double _x, _y;
+
+
+        //_x= cos(a*x) - sin(b*y);
+        //_y= cos(c*y) - sin(d*x);
+
+
+        /*
+        if (Rnd.Next() > 0.5)
+        {
+                _x= P.G[0].Value(y) + P.G[1].Value(x);
+                _y= P.G[2].Value(x) + P.G[3].Value(y);
+        }
+        else
+        {
+                double d= 1.0 / ((x - 1.0) * (x - 1.0) + y * y + 1.0);
+
+                _x= 1.0 + a * b*(x - 3.0) * d;
+                _y= a * y * d;
+        }
+        */
+        if (fRandom.Next() > 0.5)
+        {
+                _x= sin(a * y) + cos(b* x + d*y);
+                _y= sin(c * x) + cos(d * y );
+        }
+        else
+        {
+                _x= -y * sin(y * x + x*sin(y*d + c*sin(a*x)));
+                _y= x * sin(b * x) + a*b * sin(c*y);
+        }
+
+
+        x= _x;
+        y= _y;
+}
+#endif
+//---------------------------------------------------------------------------
+void FAttract0(const double &A, const double &B, const double &C, const double &D, double &x, double &y)
+{
+        double _x, _y;
+
+        _x= sin(A * y) - cos(B * x);
+        _y= sin(C * x) - cos(D * y);
+
+        x= _x;
+        y= _y;
+}
+//---------------------------------------------------------------------------
+void FAttract1(const double &A, const double &B, const double &C, const double &D, double &x, double &y)
+{
+        double _x, _y;
+
+        _x= sin(A * y) - C * cos(A * x);
+        _y= sin(B * x) - D * cos(B * y);
+
+        x= _x;
+        y= _y;
+}
+#if true

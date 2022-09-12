@@ -6,8 +6,10 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"image/jpeg"
 	"image/png"
 	"io/ioutil"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -22,11 +24,31 @@ func FillImage(m draw.Image, c color.Color) {
 	draw.Draw(m, b, image.NewUniform(c), image.ZP, draw.Src)
 }
 
-func SaveImagePNG(filename string, m image.Image) error {
+func saveImagePNG(filename string, m image.Image) error {
 	var b bytes.Buffer
 	err := png.Encode(&b, m)
 	if err != nil {
 		return err
+	}
+	return ioutil.WriteFile(filename, b.Bytes(), 0666)
+}
+
+func SaveImage(filename string, m image.Image) error {
+	ext := filepath.Ext(filename)
+	var b bytes.Buffer
+	switch ext {
+	case ".png":
+		err := png.Encode(&b, m)
+		if err != nil {
+			return err
+		}
+	case ".jpeg":
+		err := jpeg.Encode(&b, m, nil)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("invalid image ext %q", ext)
 	}
 	return ioutil.WriteFile(filename, b.Bytes(), 0666)
 }
