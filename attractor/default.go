@@ -6,17 +6,14 @@ import (
 
 var DefaultRenderConfig = RenderConfig{
 	ImageFilename: "attractor.png",
-	ImageSize:     "700x700",
+	ImageSize:     "512x512",
 	TotalPoints:   10_000_000,
 	RadiusFactor:  0.9,
 	FillBG:        true,
 	ColorBG:       "#fff",
 	ColorFG:       "#000",
-	Smooth: SmoothConfig{
-		Present: true,
-		Range:   1,
-		Factor:  15,
-	},
+	Smooth:        true,
+	ToneFactor:    15,
 }
 
 const DefaultRenderConfigFilename = "render_config.json"

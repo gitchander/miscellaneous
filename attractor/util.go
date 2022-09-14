@@ -1,8 +1,8 @@
 package attractor
 
-import (
-	"math"
-)
+func not(b bool) bool {
+	return !b
+}
 
 func minInt(a, b int) int {
 	if a < b {
@@ -23,16 +23,6 @@ func maxFloat64(a, b float64) float64 {
 		return a
 	}
 	return b
-}
-
-func applyFactor(x, factor float64) float64 {
-	if x < 0 {
-		return 0
-	}
-	if x < 1 {
-		return 1 - math.Exp(factor*math.Log(1-x))
-	}
-	return 1
 }
 
 func clamp(a float64, min, max float64) float64 {

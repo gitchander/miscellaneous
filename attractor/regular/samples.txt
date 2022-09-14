@@ -8,16 +8,21 @@ Sierpiński triangle:
 https://en.wikipedia.org/wiki/Sierpi%C5%84ski_triangle
 $ ./regular -points 3 -factor 0.5
 
-$ ./regular -points 6 -factor 0.5
 $ ./regular -points 4 -factor 0.52
 $ ./regular -points 4 -factor 0.571428571
 $ ./regular -points 4 -factor 0.5 -cps "not-direct-neighbors"
-$ ./regular -points 5 -factor 0.62
+
+factor = 1 / phi
+$ ./regular -points 5 -factor 0.6180339887498949
+
 $ ./regular -points 5 -factor 0.5 -cps "random"
 $ ./regular -points 5 -factor 0.5 -cps "not-twice"
 $ ./regular -points 5 -factor 0.5 -cps "not-direct-neighbors"
+
+$ ./regular -points 6 -factor 0.5
 $ ./regular -points 6 -factor 0.668
 $ ./regular -points 6 -factor 0.5 -cps "not-direct-neighbors"
+
 $ ./regular -points 7 -factor 0.693
 $ ./regular -points 10 -factor 0.765
 $ ./regular -points 12 -factor 0.79
