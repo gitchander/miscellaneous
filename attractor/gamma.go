@@ -44,6 +44,8 @@ func ToneCorrectionFunc(toneFactor float64) CorrectFunc {
 	}
 }
 
+// 1 - (1 - x) ^ factor
+// 1 - exp(factor * log(1-x))
 func applyFactor(x, factor float64) float64 {
 	if x < 0 {
 		return 0
