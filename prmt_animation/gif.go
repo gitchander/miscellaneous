@@ -23,7 +23,7 @@ func makeGIF(filename string, render func(*gif.GIF) error) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(filename, buf.Bytes(), 0666)
+	err = ioutil.WriteFile(filename, buf.Bytes(), 0644)
 	return err
 }
 

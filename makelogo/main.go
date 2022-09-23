@@ -43,7 +43,7 @@ func saveImagePNG(im image.Image, filename string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, buf.Bytes(), 0666)
+	return ioutil.WriteFile(filename, buf.Bytes(), 0644)
 }
 
 func checkError(err error) {

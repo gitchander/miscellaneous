@@ -185,7 +185,7 @@ func WriteImagePNG(filename string, m image.Image) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, b.Bytes(), 0666)
+	return ioutil.WriteFile(filename, b.Bytes(), 0644)
 }
 
 func clonePalette(a []color.Color) []color.Color {

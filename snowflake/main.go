@@ -104,7 +104,7 @@ func saveImagePNG(m image.Image, filename string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, b.Bytes(), 0666)
+	return ioutil.WriteFile(filename, b.Bytes(), 0644)
 }
 
 func renderBase(p Params, set func(x, y float64)) {

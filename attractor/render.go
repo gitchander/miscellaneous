@@ -2,6 +2,7 @@ package attractor
 
 import (
 	"image"
+	"image/color"
 	"image/draw"
 	"math"
 
@@ -49,6 +50,8 @@ func renderBrute(pas *params, nr Nexter, g draw.Image) {
 func renderSmooth(pas *params, nr Nexter, g draw.Image) {
 
 	var correctFunc = pas.correctFunc
+
+	fg := color.NRGBA64Model.Convert(pas.colorFG).(color.NRGBA64)
 
 	size := pas.imageSize
 
@@ -113,8 +116,13 @@ func renderSmooth(pas *params, nr Nexter, g draw.Image) {
 			v := ssv[x][y] / maxVal
 			t := correctFunc(v)
 
-			c0 := g.At(x, y)
-			c := utils.LerpColor(c0, pas.colorFG, t)
+			var (
+				bg  = g.At(x, y)
+				fgt = colorLerpAlpha(fg, t)
+			)
+
+			c := utils.ColorOver(bg, fgt)
+
 			g.Set(x, y, c)
 		}
 	}
@@ -125,4 +133,10 @@ func floorCeil(x float64) (floor float64, ceil float64) {
 	//ceil = math.Ceil(x)
 	ceil = floor + 1
 	return
+}
+
+// t: [0..1]
+func colorLerpAlpha(c color.NRGBA64, t float64) color.NRGBA64 {
+	c.A = uint16(math.Round(t * float64(c.A)))
+	return c
 }

@@ -190,7 +190,7 @@ func calcAndPlot() {
 	_, err = wt.WriteTo(&buf)
 	checkError(err)
 
-	err = ioutil.WriteFile("result.png", buf.Bytes(), 0666)
+	err = ioutil.WriteFile("result.png", buf.Bytes(), 0644)
 	checkError(err)
 }
 

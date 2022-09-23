@@ -125,7 +125,7 @@ func test2() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = ioutil.WriteFile("test.png", buf.Bytes(), 0666)
+	err = ioutil.WriteFile("test.png", buf.Bytes(), 0644)
 	if err != nil {
 		log.Fatal(err)
 	}

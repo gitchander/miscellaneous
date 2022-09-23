@@ -18,7 +18,7 @@ import (
 
 func main() {
 
-	fmt.Println("Hello, Bifurcation diagram!")
+	fmt.Println("Rendering Bifurcation diagram")
 
 	n := 100000
 
@@ -34,17 +34,17 @@ func main() {
 	// 	lV   = Interval{Min: -0.55, Max: 1.55}
 	// )
 
-	// var (
-	// 	size = image.Pt(1024, 1024)
-	// 	lK   = Interval{Min: 2.95, Max: +4}
-	// 	lV   = Interval{Min: -0.05, Max: 1.05}
-	// )
-
 	var (
 		size = image.Pt(1024, 1024)
-		lK   = Interval{Min: 3.5, Max: +4}
+		lK   = Interval{Min: 2.95, Max: +4}
 		lV   = Interval{Min: -0.05, Max: 1.05}
 	)
+
+	// var (
+	// 	size = image.Pt(1024, 1024)
+	// 	lK   = Interval{Min: 3.5, Max: +4}
+	// 	lV   = Interval{Min: -0.05, Max: 1.05}
+	// )
 
 	//--------------------------------------------------------------------------
 	lfX := Interval{Min: 0, Max: float64(size.X - 1)}
@@ -56,53 +56,65 @@ func main() {
 		fss[y] = make([]float64, size.Y)
 	}
 
+	var (
+		subX = 10
+		dfX  = 1.0 / float64(subX)
+	)
+
 	r := newRandNow()
 
 	for x := 0; x < size.X; x++ {
 
-		var (
-			fX = float64(x)
+		fX0 := float64(x)
 
-			nfX = NormalizeIvl(lfX, fX)
-			k   = LerpIvl(lK, nfX)
-		)
+		for j := 0; j < subX; j++ {
 
-		lmf := LogisticMapFunc(k)
-
-		v := randValueIn(r, lv0)
-
-		for i := 0; i < n; i++ {
-
-			v = lmf(v)
+			fX := fX0 + float64(j)*dfX
 
 			var (
-				nv = NormalizeIvl(lV, v)
-				fY = LerpIvl(lfY, nv)
+				// fX = float64(x)
+
+				nfX = NormalizeIvl(lfX, fX)
+				k   = LerpIvl(lK, nfX)
 			)
 
-			if false {
-				y := int(math.Round(fY))
-				if (0 <= y) && (y < size.Y) {
-					fss[x][y] += 1
-				}
-			} else {
-				fY0, fY1 := floorCeil(fY)
+			lmf := LogisticMapFunc(k)
+
+			v := randValueIn(r, lv0)
+
+			for i := 0; i < n; i++ {
+
+				v = lmf(v)
 
 				var (
-					t0 = 1 - (fY - fY0)
-					t1 = 1 - (fY1 - fY)
+					nv = NormalizeIvl(lV, v)
+					fY = LerpIvl(lfY, nv)
 				)
 
-				var (
-					y0 = int(fY0)
-					y1 = int(fY1)
-				)
+				if false {
+					y := int(math.Round(fY))
+					if (0 <= y) && (y < size.Y) {
+						fss[x][y] += 1
+					}
+				} else {
+					fY0, fY1 := floorCeil(fY)
 
-				if (0 <= y0) && (y0 < size.Y) {
-					fss[x][y0] += t0
-				}
-				if (0 <= y1) && (y1 < size.Y) {
-					fss[x][y1] += t1
+					var (
+						t0 = 1 - (fY - fY0)
+						t1 = 1 - (fY1 - fY)
+					)
+
+					var (
+						y0 = int(fY0)
+						y1 = int(fY1)
+					)
+
+					if (0 <= y0) && (y0 < size.Y) {
+						fss[x][y0] += t0
+					}
+					if (0 <= y1) && (y1 < size.Y) {
+						fss[x][y1] += t1
+					}
 				}
 			}
 		}
@@ -228,7 +240,7 @@ func saveImagePNG(filename string, m image.Image) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, b.Bytes(), 0666)
+	return ioutil.WriteFile(filename, b.Bytes(), 0644)
 }
 
 func gammaCorrectionFunc(gamma float64) func(float64) float64 {

@@ -61,3 +61,48 @@ func parseHexDigits(bs []byte) ([]uint8, error) {
 	}
 	return ds, nil
 }
+
+func ColorOver(dc, sc color.Color) color.Color {
+	var (
+		dc1 = color.RGBA64Model.Convert(dc).(color.RGBA64)
+		sc1 = color.RGBA64Model.Convert(sc).(color.RGBA64)
+	)
+	return colorOverRGBA64(dc1, sc1)
+}
+
+func colorOverRGBA64(dc, sc color.RGBA64) color.RGBA64 {
+
+	// m is the maximum color value returned by image.Color.RGBA.
+	const m = 1<<16 - 1
+
+	a := m - uint32(sc.A)
+
+	return color.RGBA64{
+		R: uint16((uint32(dc.R)*a)/m) + sc.R,
+		G: uint16((uint32(dc.G)*a)/m) + sc.G,
+		B: uint16((uint32(dc.B)*a)/m) + sc.B,
+		A: uint16((uint32(dc.A)*a)/m) + sc.A,
+	}
+}
+
+func LerpColor(c0, c1 color.Color, t float64) color.Color {
+
+	var (
+		v0 = color.RGBAModel.Convert(c0).(color.RGBA)
+		v1 = color.RGBAModel.Convert(c1).(color.RGBA)
+	)
+
+	var (
+		r = uint8(Round(Lerp(float64(v0.R), float64(v1.R), t)))
+		g = uint8(Round(Lerp(float64(v0.G), float64(v1.G), t)))
+		b = uint8(Round(Lerp(float64(v0.B), float64(v1.B), t)))
+		a = uint8(Round(Lerp(float64(v0.A), float64(v1.A), t)))
+	)
+
+	return color.RGBA{
+		R: r,
+		G: g,
+		B: b,
+		A: a,
+	}
+}

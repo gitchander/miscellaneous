@@ -153,7 +153,7 @@ func saveSamplesFile(filename string, samples []*Sample) error {
 		return err
 	}
 
-	return ioutil.WriteFile(filename, data, 0666)
+	return ioutil.WriteFile(filename, data, 0644)
 }
 
 func loadSamplesFile(filename string) ([]*Sample, error) {

@@ -20,8 +20,7 @@ func NewImageBySize(imageSize image.Point) draw.Image {
 }
 
 func FillImage(m draw.Image, c color.Color) {
-	b := m.Bounds()
-	draw.Draw(m, b, image.NewUniform(c), image.ZP, draw.Src)
+	draw.Draw(m, m.Bounds(), image.NewUniform(c), image.ZP, draw.Src)
 }
 
 func saveImagePNG(filename string, m image.Image) error {
@@ -30,7 +29,7 @@ func saveImagePNG(filename string, m image.Image) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, b.Bytes(), 0666)
+	return ioutil.WriteFile(filename, b.Bytes(), 0644)
 }
 
 func SaveImage(filename string, m image.Image) error {
@@ -50,7 +49,7 @@ func SaveImage(filename string, m image.Image) error {
 	default:
 		return fmt.Errorf("invalid image ext %q", ext)
 	}
-	return ioutil.WriteFile(filename, b.Bytes(), 0666)
+	return ioutil.WriteFile(filename, b.Bytes(), 0644)
 }
 
 func ParseSize(s string) (image.Point, error) {

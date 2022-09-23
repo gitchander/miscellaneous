@@ -10,7 +10,7 @@ func WriteConfigJSON(filename string, config interface{}) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, data, 0666)
+	return ioutil.WriteFile(filename, data, 0644)
 }
 
 func ReadConfigJSON(filename string, config interface{}) error {

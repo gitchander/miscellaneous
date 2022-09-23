@@ -48,7 +48,7 @@ func test() {
 		buf.WriteByte(byte(b))
 	}
 
-	err := ioutil.WriteFile("test", buf.Bytes(), 0666)
+	err := ioutil.WriteFile("test", buf.Bytes(), 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
