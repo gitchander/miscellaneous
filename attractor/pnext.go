@@ -32,7 +32,7 @@ func ParseCornerpointSelector(s string) (CornerpointSelector, error) {
 	return cps, nil
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 type PsFeeder struct {
 	ps  []Point2f
 	t   float64 // [0..1]
@@ -136,7 +136,7 @@ func (p *PsFeeder) Feed(a Point2f) Point2f {
 	return LerpPoint2f(a, p.ps[i], p.t)
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 type intSlice []int
 
 var _ utils.Swapper = intSlice(nil)

@@ -109,7 +109,7 @@ func parseFuncOp(data []byte) (obj Object, rest []byte, err error) {
 	return nil, data, parseError
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 type ByteIsFunc func(byte) bool
 
 func indexFunc(data []byte, f ByteIsFunc) int {

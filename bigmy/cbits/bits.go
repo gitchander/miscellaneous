@@ -56,9 +56,9 @@ func mergeUint64(hi, lo uint64) (x uint64) {
 // 	return mask32 ^ a
 // }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Add32
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Add32 returns the sum with carry of x, y and carry: sum = x + y + carry.
 // The carry input must be 0 or 1; otherwise the behavior is undefined.
 // The carryOut output is guaranteed to be 0 or 1.
@@ -100,9 +100,9 @@ func add32_My(x, y, carry uint32) (sum, carryOut uint32) {
 	return
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Sub32
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Sub32 returns the difference of x, y and borrow, diff = x - y - borrow.
 // The borrow input must be 0 or 1; otherwise the behavior is undefined.
 // The borrowOut output is guaranteed to be 0 or 1.
@@ -131,9 +131,9 @@ func sub32_My(x, y, borrow uint32) (diff, borrowOut uint32) {
 	return sub32_Go(x, y, borrow)
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Mul32
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Mul32 returns the 64-bit product of x and y: (hi, lo) = x * y
 // with the product bits' upper half returned in hi and the lower
 // half returned in lo.
@@ -197,15 +197,15 @@ func mul32_My(x, y uint32) (hi, lo uint32) {
 	return
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 var (
 	divideError   = errors.New("divideError")
 	overflowError = errors.New("overflowError")
 )
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Div32
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Div32 returns the quotient and remainder of (hi, lo) divided by y:
 // quo = (hi, lo)/y, rem = (hi, lo)%y with the dividend bits' upper
 // half in parameter hi and the lower half in parameter lo.
@@ -270,9 +270,9 @@ func div32_My(hi, lo, y uint32) (quo, rem uint32) {
 	return div32_Go(hi, lo, y)
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Rem32
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Rem32 returns the remainder of (hi, lo) divided by y. Rem32 panics
 // for y == 0 (division by zero) but, unlike Div32, it doesn't panic
 // on a quotient overflow.

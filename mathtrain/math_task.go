@@ -51,7 +51,7 @@ func (p *mathTask) CheckAnswer(answer string) (success bool, failMessage string)
 	return true, ""
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 type mathTasker struct {
 	r   *rand.Rand
 	bos []BinaryOperation

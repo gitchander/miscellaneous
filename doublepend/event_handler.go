@@ -12,7 +12,7 @@ type EventHandler interface {
 	EventKey(keyCode uint16)
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 type dummyEventHandler struct{}
 
 var _ EventHandler = dummyEventHandler{}
@@ -29,7 +29,7 @@ func (dummyEventHandler) EventKey(keyCode uint16) {
 
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 type engineEventHandler struct {
 	number int
 	engine *Engine

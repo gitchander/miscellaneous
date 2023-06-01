@@ -79,7 +79,7 @@ func (Div) Symbol() string {
 	return "/"
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 func parseOperations(s string) ([]BinaryOperation, error) {
 	var bos []BinaryOperation
 	m := make(map[string]struct{})

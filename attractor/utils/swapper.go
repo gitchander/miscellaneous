@@ -6,7 +6,9 @@ type Swapper interface {
 }
 
 // a b c d e f
-//  / / / / /
+//
+//	/ / / / /
+//
 // b c d e f a
 func RotateDown(s Swapper) {
 	n := s.Len()
@@ -16,7 +18,9 @@ func RotateDown(s Swapper) {
 }
 
 // a b c d e f
-//  \ \ \ \ \
+//
+//	\ \ \ \ \
+//
 // f a b c d e
 func RotateUp(s Swapper) {
 	n := s.Len()
