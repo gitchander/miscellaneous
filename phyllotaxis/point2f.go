@@ -11,6 +11,13 @@ func Pt2f(x, y float64) Point2f {
 	}
 }
 
+func MakePoint2f(x, y float64) Point2f {
+	return Point2f{
+		X: x,
+		Y: y,
+	}
+}
+
 func (a Point2f) Add(b Point2f) Point2f {
 	return Point2f{
 		X: a.X + b.X,

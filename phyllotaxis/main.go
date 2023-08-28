@@ -24,7 +24,7 @@ const (
 )
 
 func main() {
-	drawPoints()
+	//drawPoints()
 	drawAreas()
 }
 
@@ -46,30 +46,16 @@ func sqr(a float64) float64 {
 	return a * a
 }
 
-// https://en.wikipedia.org/wiki/Polar_coordinate_system
-func polarToCartesian(r, φ float64) (x, y float64) {
-	sin, cos := math.Sincos(φ)
-	x = r * cos
-	y = r * sin
-	return
-}
-
-func cartesianToPolar(x, y float64) (r, φ float64) {
-	φ = math.Atan2(y, x)
-	r = math.Hypot(x, y)
-	return
-}
-
 // Vogel’s formula
 // α - angle
-func formulaV(n int, c, α float64) (r, φ float64) {
+func formulaV(n int, c, α float64) Polar {
 
 	nf := float64(n)
 
-	r = c * math.Sqrt(nf)
-	φ = α * nf
-
-	return
+	return Polar{
+		Rho: c * math.Sqrt(nf),
+		Phi: α * nf,
+	}
 }
 
 func drawPoints() {
@@ -88,28 +74,25 @@ func drawPoints() {
 
 	//var sizeX, sizeY = 512, 512
 	//var sizeX, sizeY = 1024, 1024
-	var sizeX, sizeY = 900, 900
+	//var sizeX, sizeY = 900, 900
+	size := image.Point{X: 900, Y: 900}
 
-	dc := gg.NewContext(sizeX, sizeY)
+	dc := gg.NewContext(size.X, size.Y)
 
-	dc.DrawRectangle(0, 0, float64(sizeX), float64(sizeY))
+	dc.DrawRectangle(0, 0, float64(size.X), float64(size.Y))
 	//dc.SetRGB(0, 0, 0) // black
 	dc.SetRGB(1, 1, 1) // white
 	dc.Fill()
 
-	var (
-		centerX = float64(sizeX) / 2
-		centerY = float64(sizeY) / 2
-	)
+	center := Pt2f(float64(size.X), float64(size.Y)).DivScalar(2)
 
 	circleRadius := c * 0.5
 
 	for i := 0; i < n; i++ {
-		r, φ := formulaV(i, c, angleRad)
-		x, y := polarToCartesian(r, φ)
-		x += centerX
-		y += centerY
-		dc.DrawCircle(x, y, circleRadius)
+		p := formulaV(i, c, angleRad)
+		t := PolarToCartesian(p)
+		t = t.Add(center)
+		dc.DrawCircle(t.X, t.Y, circleRadius)
 	}
 
 	dc.SetRGB(0, 0, 0) // black
@@ -128,8 +111,12 @@ func drawAreas() {
 
 	var (
 		angleRad = goldAngleRad
-		c        = 10.0
-		n        = 1500
+
+		// c        = 10.0
+		// n        = 1500
+
+		c = 40.0
+		n = 200
 	)
 
 	//size := image.Point{X: 512, Y: 512}
@@ -143,11 +130,10 @@ func drawAreas() {
 	var ps []Point2f
 
 	for i := 0; i < n; i++ {
-		r, φ := formulaV(i, c, angleRad)
-		x, y := polarToCartesian(r, φ)
-
-		p := center.Add(Pt2f(x, y))
-		ps = append(ps, p)
+		p := formulaV(i, c, angleRad)
+		t := PolarToCartesian(p)
+		t = t.Add(center)
+		ps = append(ps, t)
 	}
 
 	var pal []color.Color
@@ -156,9 +142,24 @@ func drawAreas() {
 		pal = palette.Plan9
 	case 1:
 		pal = palette.WebSafe
+	case 2:
+		// pal = make([]color.Color, 6)
+		// for i := range pal {
+		// 	pal[i] = color.Gray{Y: 255}
+		// }
+		// pal[0] = color.Gray{Y: 0}
+
+		pal = make([]color.Color, 6) // 6, 8, 13
+		d := 255 / (len(pal))
+
+		for i := range pal {
+			pal[i] = color.Gray{Y: 255 - byte(i*d)}
+		}
+		//pal[0] = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	}
 	pal = clonePalette(pal)
 	shufflePalette(pal)
+	pal = pal[:6]
 
 	for y := 0; y < size.Y; y++ {
 		for x := 0; x < size.X; x++ {
@@ -172,7 +173,21 @@ func drawAreas() {
 					d = di
 				}
 			}
-			m.Set(x, y, pal[index%len(pal)])
+			var (
+				//cond = index < 25
+				cond = index < 90
+				//cond = index < (25 + 4*13)
+				//cond = (25 <= index) && (index < (25 + 3*13))
+				//cond = (25 <= index) && (index < (25 + 5*13))
+				//cond = true
+			)
+
+			if cond {
+				m.Set(x, y, pal[index%len(pal)])
+			} else {
+				c := color.Gray{Y: 0}
+				m.Set(x, y, c)
+			}
 		}
 	}
 	err := WriteImagePNG("areas.png", m)

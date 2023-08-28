@@ -1,0 +1,11 @@
+{
+	"image_filename": "attractor.png",
+	"image_size": "512x512",
+	"total_points": 10000000,
+	"radius_factor": 0.9,
+	"fill_bg": true,
+	"color_bg": "#fff",
+	"color_fg": "#000",
+	"smooth": true,
+	"tone_factor": 15
+}
