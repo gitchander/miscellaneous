@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"sort"
 )
 
 type Individ struct {
@@ -49,19 +50,19 @@ func RandIndividGridBySeed(seed int64, n int, distance float64) *Individ {
 			ps = append(ps, p)
 		}
 	}
-	shuffleElements(r, Point2fSlice(ps))
+	Point2fSlice(ps).Shuffle(r)
 	return NewIndivid(ps, distance)
 }
 
 func (a *Individ) Clone() *Individ {
-	if a != nil {
-		return &Individ{
-			ps:       clonePoint2fSlice(a.ps),
-			distance: a.distance,
-			fitness:  a.fitness,
-		}
+	if a == nil {
+		return nil
 	}
-	return nil
+	return &Individ{
+		ps:       cloneSlice(a.ps),
+		distance: a.distance,
+		fitness:  a.fitness,
+	}
 }
 
 func (a *Individ) Fitness() float64 {
@@ -146,16 +147,14 @@ func (d *Individ) randomShort(r *rand.Rand) {
 	d.calcFitness()
 }
 
-type ByFitness []*Individ
+//------------------------------------------------------------------------------
 
-func (p ByFitness) Len() int {
-	return len(p)
-}
+type byFitness []*Individ
 
-func (p ByFitness) Less(i, j int) bool {
-	return p[i].fitness < p[j].fitness
-}
+func (x byFitness) Len() int           { return len(x) }
+func (x byFitness) Less(i, j int) bool { return x[i].fitness < x[j].fitness }
+func (x byFitness) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
-func (p ByFitness) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
+func (x byFitness) Sort() {
+	sort.Sort(x)
 }

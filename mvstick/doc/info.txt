@@ -1,0 +1,5 @@
+Rush Hour (puzzle)
+https://en.wikipedia.org/wiki/Rush_Hour_(puzzle)
+https://www.michaelfogleman.com/rush/
+https://www.michaelfogleman.com/rush/#HardestPuzzles
+https://github.com/fogleman/rush

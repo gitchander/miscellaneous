@@ -17,15 +17,15 @@ func sqrt(a float64) float64 {
 	return math.Sqrt(a)
 }
 
-func cloneInts(a []int) []int {
-	b := make([]int, len(a))
+func cloneSlice[T any](a []T) []T {
+	b := make([]T, len(a))
 	copy(b, a)
 	return b
 }
 
 func randomDifferentIndexes(r *rand.Rand, n int) (i, j int) {
 	if n < 2 {
-		return
+		panic("invalid n")
 	}
 	for i == j {
 		i = r.Intn(n)
@@ -53,4 +53,26 @@ func mod(x, y int) int {
 		m += y
 	}
 	return m
+}
+
+func minFloat64(a, b float64) float64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func maxFloat64(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func middle(a, b float64) float64 {
+	return (a + b) / 2
+}
+
+func normalize(x float64, min, max float64) float64 {
+	return (x - min) / (max - min)
 }

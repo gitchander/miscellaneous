@@ -17,10 +17,6 @@ func newRandSeed(seed int64) *rand.Rand {
 	return rand.New(rand.NewSource(seed))
 }
 
-func randBool(r *rand.Rand) bool {
-	return (r.Int() & 1) == 1
-}
-
 //------------------------------------------------------------------------------
 
 type Swapper interface {
@@ -41,8 +37,19 @@ var _ Swapper = Point2fSlice(nil)
 func (p Point2fSlice) Len() int      { return len(p) }
 func (p Point2fSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 
-func (x Point2fSlice) Shuffle(r *rand.Rand) {
-	Shuffle(r, x)
+func (p Point2fSlice) Shuffle(r *rand.Rand) {
+	Shuffle(r, p)
 }
 
 //------------------------------------------------------------------------------
+
+func randPoint2f(r *rand.Rand) Point2f {
+	return randPoint2fMinMax(r, 0.05, 0.95)
+}
+
+func randPoint2fMinMax(r *rand.Rand, min, max float64) Point2f {
+	return Point2f{
+		X: lerp(min, max, r.Float64()),
+		Y: lerp(min, max, r.Float64()),
+	}
+}

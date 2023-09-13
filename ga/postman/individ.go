@@ -1,6 +1,8 @@
 package main
 
 import (
+	"sort"
+
 	"math/rand"
 )
 
@@ -32,38 +34,35 @@ func RandIndividBySeed(seed int64, n int) *Individ {
 	return NewIndivid(ps)
 }
 
-func RandIndividGridBySeed(seed int64, n int) *Individ {
+func RandIndividGridBySeed(seed int64, nx, ny int) *Individ {
 	r := newRandSeed(seed)
-	ps := make([]Point2f, 0, n)
-	d := 1 / float64(n-1)
-	for x := 0; x < n; x++ {
-		for y := 0; y < n; y++ {
+	ps := make([]Point2f, 0, nx*ny)
+	var (
+		dx = 1 / float64(nx+1)
+		dy = 1 / float64(ny+1)
+	)
+	for x := 0; x < nx; x++ {
+		for y := 0; y < ny; y++ {
 			p := Point2f{
-				X: float64(x) * d,
-				Y: float64(y) * d,
+				X: float64(x+1) * dx,
+				Y: float64(y+1) * dy,
 			}
 			ps = append(ps, p)
 		}
 	}
-	shuffleElements(r, Point2fSlice(ps))
+	Point2fSlice(ps).Shuffle(r)
 	return NewIndivid(ps)
 }
 
-func cloneInts(a []int) []int {
-	b := make([]int, len(a))
-	copy(b, a)
-	return b
-}
-
 func (a *Individ) Clone() *Individ {
-	if a != nil {
-		return &Individ{
-			ps:      a.ps,
-			genome:  cloneInts(a.genome),
-			fitness: a.fitness,
-		}
+	if a == nil {
+		return nil
 	}
-	return nil
+	return &Individ{
+		ps:      a.ps,
+		genome:  cloneSlice(a.genome),
+		fitness: a.fitness,
+	}
 }
 
 func (a *Individ) Fitness() float64 {
@@ -180,24 +179,14 @@ func (d *Individ) RandomFlip(r *rand.Rand) {
 	d.calcFitness()
 }
 
-func mod(x, y int) int {
-	m := x % y
-	if m < 0 {
-		m += y
-	}
-	return m
-}
+//------------------------------------------------------------------------------
 
-type ByFitness []*Individ
+type byFitness []*Individ
 
-func (p ByFitness) Len() int {
-	return len(p)
-}
+func (x byFitness) Len() int           { return len(x) }
+func (x byFitness) Less(i, j int) bool { return x[i].fitness < x[j].fitness }
+func (x byFitness) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
 
-func (p ByFitness) Less(i, j int) bool {
-	return p[i].fitness < p[j].fitness
-}
-
-func (p ByFitness) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
+func (x byFitness) Sort() {
+	sort.Sort(x)
 }

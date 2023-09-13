@@ -126,7 +126,8 @@ func absInt(a int) int {
 	return a
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 func Neighbors(p Point, neighborhood []Point) []Point {
 	neighbors := make([]Point, len(neighborhood))
 	for i, d := range neighborhood {

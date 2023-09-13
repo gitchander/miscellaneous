@@ -78,7 +78,7 @@ func parseDot(s string) (Rational, error) {
 		return zero, err
 	}
 
-	exp := powerOfTen(len(sB))
+	exp := powerInt(10, len(sB))
 
 	var (
 		p = a*exp + b
@@ -86,13 +86,4 @@ func parseDot(s string) (Rational, error) {
 	)
 
 	return Rat(p, q), nil
-}
-
-// 10 ^ n
-func powerOfTen(n int) int {
-	exp := 1
-	for i := 0; i < n; i++ {
-		exp *= 10
-	}
-	return exp
 }

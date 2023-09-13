@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"time"
 )
 
@@ -28,12 +27,6 @@ type stepDuration struct {
 	min, max time.Duration
 	gain     time.Duration // growth, increase, increment
 }
-
-// func newStepDuration(min, max time.Duration) (*stepDuration, error) {
-// 	if min > max {
-// 		return nil, fmt.Errorf("invalid durations: min(%d) > max(%d)", min, max)
-// 	}
-// }
 
 func (p *stepDuration) crop() {
 	if p.d < p.min {

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"image"
-	"sort"
+	"log"
+	"path/filepath"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -16,34 +18,59 @@ func main() {
 	postmanProblem()
 }
 
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func postmanProblem() {
 
-	start := time.Now()
+	var (
+		dir                string
+		numberOfPoints     int
+		initSeed           int64
+		generations        int
+		mutations          int
+		generationCapacity int
+	)
 
-	numberOfPoints := 100
+	flag.StringVar(&dir, "dir", "images", "output directory")
+	flag.IntVar(&numberOfPoints, "points", 100, "number of points")
+	flag.Int64Var(&initSeed, "init-seed", -1, "initial seed")
+	flag.IntVar(&generations, "generations", 1000, "number of generations")
+	flag.IntVar(&mutations, "mutations", 50, "number of mutations")
+	flag.IntVar(&generationCapacity, "gen-cap", 50, "generation capacity")
 
-	startIndivid := RandIndividBySeed(7, numberOfPoints)
-	//startIndivid := RandIndividGridBySeed(7, numberOfPoints)
-	fmt.Println("begin-fitness:", startIndivid.Fitness())
+	flag.Parse()
 
 	r := newRandNow()
 
-	const (
-		numberOfGenerations = 1000
-		genMaxLen           = 10
-		mutantCount         = 50
-	)
+	if initSeed < 0 {
+		initSeed = r.Int63()
+		fmt.Printf("init-seed %d\n", initSeed)
+	}
 
-	generation := make([]*Individ, 0, genMaxLen+mutantCount)
+	err := MkdirIfNotExist(dir)
+	checkError(err)
+
+	start := time.Now()
+
+	startIndivid := RandIndividBySeed(initSeed, numberOfPoints)
+	//startIndivid := RandIndividGridBySeed(initSeed, 20, 20)
+	fmt.Println("begin-fitness:", startIndivid.Fitness())
+
+	generation := make([]*Individ, 0, (generationCapacity + mutations))
 	generation = append(generation, startIndivid)
 
-	drawIndivid(startIndivid.Range, "source.png")
+	err = drawIndivid(startIndivid.Range, filepath.Join(dir, "source.png"))
+	checkError(err)
 
-	for i := 0; i < numberOfGenerations; i++ {
+	for i := 0; i < generations; i++ {
 
 		ng := len(generation)
 
-		for j := 0; j < mutantCount; j++ {
+		for j := 0; j < mutations; j++ {
 
 			k := r.Intn(ng)
 			m := generation[k].Clone()
@@ -57,15 +84,17 @@ func postmanProblem() {
 			generation = append(generation, m)
 		}
 
-		sort.Sort(ByFitness(generation))
+		byFitness(generation).Sort()
 
-		if len(generation) > genMaxLen {
-			generation = generation[:genMaxLen]
+		if len(generation) > generationCapacity {
+			generation = generation[:generationCapacity]
 		}
 	}
 
 	bestIndivid := generation[0]
-	drawIndivid(bestIndivid.Range, "genetic.png")
+	err = drawIndivid(bestIndivid.Range, filepath.Join(dir, "genetic.png"))
+	checkError(err)
+
 	fmt.Println("end-fitness:", bestIndivid.Fitness())
 	fmt.Println("work duration:", time.Since(start))
 }
@@ -160,8 +189,11 @@ func drawIndivid(rangePoints func(f func(i int, p Point2f) bool), filename strin
 	dc.SetRGB(0.2, 0.3, 0.8)
 	dc.Stroke()
 
-	//const circleRadius = 0.006
-	const circleRadius = 0.01
+	const (
+		// circleRadius = 0.01
+		// circleRadius = 0.006
+		circleRadius = 0.008
+	)
 
 	rangePoints(
 		func(i int, p Point2f) bool {

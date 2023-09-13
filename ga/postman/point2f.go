@@ -5,8 +5,11 @@ import (
 	"encoding/binary"
 	"errors"
 	"math"
-	"math/rand"
 	"strconv"
+)
+
+const (
+	bytesPerUint64 = 8
 )
 
 type Point2f struct {
@@ -38,19 +41,19 @@ func (a Point2f) MarshalBinary() (data []byte, err error) {
 		uX = math.Float64bits(a.X)
 		uY = math.Float64bits(a.Y)
 	)
-	data = make([]byte, 2*8)
-	binary.BigEndian.PutUint64(data[0:], uX)
-	binary.BigEndian.PutUint64(data[8:], uY)
+	data = make([]byte, 2*bytesPerUint64)
+	binary.BigEndian.PutUint64(data[0*bytesPerUint64:], uX)
+	binary.BigEndian.PutUint64(data[1*bytesPerUint64:], uY)
 	return data, nil
 }
 
 func (p *Point2f) UnmarshalBinary(data []byte) error {
-	if len(data) < 2*8 {
+	if len(data) < 2*bytesPerUint64 {
 		return errors.New("insufficient data length")
 	}
 	var (
-		uX = binary.BigEndian.Uint64(data[0:])
-		uY = binary.BigEndian.Uint64(data[8:])
+		uX = binary.BigEndian.Uint64(data[0*bytesPerUint64:])
+		uY = binary.BigEndian.Uint64(data[1*bytesPerUint64:])
 	)
 	p.X = math.Float64frombits(uX)
 	p.Y = math.Float64frombits(uY)
@@ -82,13 +85,6 @@ func (a Point2f) DivScalar(scalar float64) Point2f {
 	return Point2f{
 		X: a.X / scalar,
 		Y: a.Y / scalar,
-	}
-}
-
-func randPoint2f(r *rand.Rand) Point2f {
-	return Point2f{
-		X: r.Float64(),
-		Y: r.Float64(),
 	}
 }
 

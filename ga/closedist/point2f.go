@@ -139,9 +139,3 @@ func Intersection(a0, a1, b0, b1 Point2f) (Point2f, bool) {
 
 	return p, true
 }
-
-func clonePoint2fSlice(a []Point2f) []Point2f {
-	b := make([]Point2f, len(a))
-	copy(b, a)
-	return b
-}
