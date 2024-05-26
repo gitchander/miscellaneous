@@ -2,26 +2,22 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/color"
-	"image/color/palette"
+	"image/draw"
 	"image/png"
 	"io/ioutil"
 	"log"
 	"math"
 
 	"github.com/fogleman/gg"
+
+	"github.com/gitchander/miscellaneous/utils/random"
 )
 
 // http://algorithmicbotany.org/papers/abop/abop-ch4.pdf
 // https://www.youtube.com/watch?v=KWoJgHFYWxY
-
-const tau = 2 * math.Pi
-
-const (
-	goldAngleRad = tau / (math.Phi * math.Phi)
-	goldAngleDeg = 360 / (math.Phi * math.Phi)
-)
 
 func main() {
 	//drawPoints()
@@ -34,16 +30,12 @@ func checkError(err error) {
 	}
 }
 
-func DegToRad(deg float64) (rad float64) {
-	return deg * (tau / 360)
-}
-
-func RadToDeg(rad float64) (deg float64) {
-	return rad * (360 / tau)
-}
-
 func sqr(a float64) float64 {
 	return a * a
+}
+
+func squareDistance(a, b Point2f) float64 {
+	return sqr(a.X-b.X) + sqr(a.Y-b.Y)
 }
 
 // Vogel’s formula
@@ -103,8 +95,8 @@ func drawPoints() {
 	checkError(err)
 }
 
-func squareDistance(a, b Point2f) float64 {
-	return sqr(a.X-b.X) + sqr(a.Y-b.Y)
+func imageFill(m draw.Image, c color.Color) {
+	draw.Draw(m, m.Bounds(), image.NewUniform(c), image.ZP, draw.Src)
 }
 
 func drawAreas() {
@@ -112,18 +104,31 @@ func drawAreas() {
 	var (
 		angleRad = goldAngleRad
 
-		// c        = 10.0
-		// n        = 1500
+		// c = 10.0
+		// n = 1500
 
-		c = 40.0
+		// c = 40.0
+		// n = 200
+
+		c = 48.0
 		n = 200
 	)
 
 	//size := image.Point{X: 512, Y: 512}
-	//size := image.Point{X: 1024, Y: 1024}
-	size := image.Point{X: 900, Y: 900}
-	r := image.Rect(0, 0, size.X, size.Y)
-	m := image.NewRGBA(r)
+	size := image.Point{X: 1024, Y: 1024}
+	//size := image.Point{X: 900, Y: 900}
+	ir := image.Rect(0, 0, size.X, size.Y)
+	m := image.NewRGBA(ir)
+
+	var (
+		//fillColor = color.White
+		fillColor = color.Gray{Y: 255}
+	)
+	//imageFill(m, fillColor)
+
+	// err := WriteImagePNG("areas.png", m)
+	// checkError(err)
+	// return
 
 	center := Pt2f(float64(size.X), float64(size.Y)).DivScalar(2)
 
@@ -136,30 +141,14 @@ func drawAreas() {
 		ps = append(ps, t)
 	}
 
-	var pal []color.Color
-	switch 1 {
-	case 0:
-		pal = palette.Plan9
-	case 1:
-		pal = palette.WebSafe
-	case 2:
-		// pal = make([]color.Color, 6)
-		// for i := range pal {
-		// 	pal[i] = color.Gray{Y: 255}
-		// }
-		// pal[0] = color.Gray{Y: 0}
-
-		pal = make([]color.Color, 6) // 6, 8, 13
-		d := 255 / (len(pal))
-
-		for i := range pal {
-			pal[i] = color.Gray{Y: 255 - byte(i*d)}
-		}
-		//pal[0] = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	var seed int64
+	if false {
+		seed = 7788002435780809846
+	} else {
+		seed = random.NextSeed()
+		fmt.Println("random seed", seed)
 	}
-	pal = clonePalette(pal)
-	shufflePalette(pal)
-	pal = pal[:6]
+	pal := randPalette(6, seed)
 
 	for y := 0; y < size.Y; y++ {
 		for x := 0; x < size.X; x++ {
@@ -185,8 +174,7 @@ func drawAreas() {
 			if cond {
 				m.Set(x, y, pal[index%len(pal)])
 			} else {
-				c := color.Gray{Y: 0}
-				m.Set(x, y, c)
+				m.Set(x, y, fillColor)
 			}
 		}
 	}
@@ -201,10 +189,4 @@ func WriteImagePNG(filename string, m image.Image) error {
 		return err
 	}
 	return ioutil.WriteFile(filename, b.Bytes(), 0644)
-}
-
-func clonePalette(a []color.Color) []color.Color {
-	b := make([]color.Color, len(a))
-	copy(b, a)
-	return b
 }
