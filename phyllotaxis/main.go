@@ -107,16 +107,16 @@ func drawAreas() {
 		// c = 10.0
 		// n = 1500
 
-		// c = 40.0
-		// n = 200
-
-		c = 48.0
+		c = 30.0
 		n = 200
+
+		// c = 48.0
+		// n = 200
 	)
 
 	//size := image.Point{X: 512, Y: 512}
-	size := image.Point{X: 1024, Y: 1024}
-	//size := image.Point{X: 900, Y: 900}
+	//size := image.Point{X: 1024, Y: 1024}
+	size := image.Point{X: 650, Y: 650}
 	ir := image.Rect(0, 0, size.X, size.Y)
 	m := image.NewRGBA(ir)
 

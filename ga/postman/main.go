@@ -56,7 +56,8 @@ func postmanProblem() {
 
 	start := time.Now()
 
-	startIndivid := RandIndividBySeed(initSeed, numberOfPoints)
+	//startIndivid := RandIndividBySeed(initSeed, numberOfPoints)
+	startIndivid := newIndividPhyllo(numberOfPoints)
 	//startIndivid := RandIndividGridBySeed(initSeed, 20, 20)
 	fmt.Println("begin-fitness:", startIndivid.Fitness())
 

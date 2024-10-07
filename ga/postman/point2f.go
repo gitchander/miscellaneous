@@ -23,6 +23,10 @@ func Pt2f(x, y float64) Point2f {
 	}
 }
 
+func MakePoint2f(x, y float64) Point2f {
+	return Pt2f(x, y)
+}
+
 func (a Point2f) String() string {
 	var (
 		sX = strconv.FormatFloat(a.X, 'g', -1, 64)
