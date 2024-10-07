@@ -6,30 +6,43 @@ import (
 )
 
 func ParseColor(s string) (color.Color, error) {
-
 	bs := []byte(s)
-	if (len(bs) == 0) || (bs[0] != '#') {
-		return nil, fmt.Errorf("invalid color: there is not prefix %c", '#')
+	if (len(bs) > 0) && (bs[0] == '#') {
+		bs = bs[1:] // skip rune #
 	}
-	bs = bs[1:]
-
 	ds, err := parseHexDigits(bs)
 	if err != nil {
 		return nil, err
 	}
-	c := color.RGBA{A: 255}
+	var c color.Color
 	switch len(ds) {
-	case 3:
-		{
-			c.R = nibblesToByte(ds[0], ds[0])
-			c.G = nibblesToByte(ds[1], ds[1])
-			c.B = nibblesToByte(ds[2], ds[2])
+	case 3: // rgb
+		c = color.NRGBA{
+			R: nibblesToByte(ds[0], ds[0]),
+			G: nibblesToByte(ds[1], ds[1]),
+			B: nibblesToByte(ds[2], ds[2]),
+			A: 0xff,
 		}
-	case 6:
-		{
-			c.R = nibblesToByte(ds[0], ds[1])
-			c.G = nibblesToByte(ds[2], ds[3])
-			c.B = nibblesToByte(ds[4], ds[5])
+	case 4: // rgba
+		c = color.NRGBA{
+			R: nibblesToByte(ds[0], ds[0]),
+			G: nibblesToByte(ds[1], ds[1]),
+			B: nibblesToByte(ds[2], ds[2]),
+			A: nibblesToByte(ds[3], ds[3]),
+		}
+	case 6: // rrggbb
+		c = color.NRGBA{
+			R: nibblesToByte(ds[0], ds[1]),
+			G: nibblesToByte(ds[2], ds[3]),
+			B: nibblesToByte(ds[4], ds[5]),
+			A: 0xff,
+		}
+	case 8: // rrggbbaa
+		c = color.NRGBA{
+			R: nibblesToByte(ds[0], ds[1]),
+			G: nibblesToByte(ds[2], ds[3]),
+			B: nibblesToByte(ds[4], ds[5]),
+			A: nibblesToByte(ds[6], ds[7]),
 		}
 	default:
 		return nil, fmt.Errorf("invalid color %q", s)
